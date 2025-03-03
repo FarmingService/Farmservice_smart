@@ -1,38 +1,294 @@
-.App {
-  text-align: center;
+/* App.css */
+
+/* Aseguramos que inputs, botones, textareas y selects usen la misma fuente */
+input,
+button,
+textarea,
+select {
+  font-family: 'Chakra Petch', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Importación de fuentes externas */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Roboto+Slab:wght@100..900&display=swap');
+
+/* Variables globales de colores y transiciones */
+:root {
+  --primary-color: #d9d9d9; /* Color principal */
+  --secondary-color: #ffffff; /* Color secundario */
+  --accent-color: #babcbf; /* Color de acento */
+  --text-color: #fffffffc; /* Color del texto */
+  --light-text: #e9e9e9; /* Color de texto más claro */
+  --background: #ffffff; /* Fondo principal */
+  --light-background: #ffffff; /* Fondo claro */
+  --transition: all 0.3s ease; /* Transición suave para cambios */
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Reseteo de márgenes, padding y ajustes de box-sizing */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Chakra Petch', sans-serif;
 }
 
-.App-header {
-  background-color: #282c34;
+/* Estilo general del body */
+body {
+  font-family: 'Chakra Petch', sans-serif;
+  color: var(--text-color); /* Color de texto */
+  line-height: 1.6;
+  background-color: var(--background); /* Color de fondo */
+  background-image: url('../public/images/fondo2.jpg'); /* Ruta a la imagen de fondo */
+  background-size: cover; /* Hace que la imagen cubra toda la página */
+  background-position: center; /* Centra la imagen */
+  background-attachment: fixed; /* Fija la imagen al hacer scroll */
+}
+
+/* Estilos del contenedor principal */
+.app-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Estilos de la barra de navegación */
+nav {
+  background-color: var(--background); /* Fondo de la navbar */
+  box-shadow: var(--shadow); /* Sombra de la navbar */
+  padding: 1rem 2rem;
+  position: sticky; /* Fija la navbar al hacer scroll */
+  top: 0;
+  z-index: 1000; /* Asegura que la navbar esté por encima de otros elementos */
+}
+
+nav .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+nav .logo {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--primary-color); /* Color del logo */
+  text-decoration: none;
 }
 
-@keyframes App-logo-spin {
+nav .nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+nav .nav-links a {
+  color: var(--text-color); /* Color de los enlaces */
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition); /* Transición suave al hacer hover */
+}
+
+nav .nav-links a:hover {
+  color: var(--primary-color); /* Color de los enlaces al hacer hover */
+}
+
+/* Estilos del contenido principal */
+main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Estilos generales para las secciones */
+section {
+  margin: 2rem 0;
+  padding: 2rem;
+  background-color: var(--light-background); /* Fondo de la sección */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  box-shadow: var(--shadow); /* Sombra de la sección */
+}
+
+/* Estilos para los títulos */
+h1, h2, h3 {
+  color: var(--text-color); /* Color de los títulos */
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.75rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+h2 {
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+/* Estilos de botones */
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: var(--primary-color); /* Fondo de botones */
+  color: white; /* Color del texto en el botón */
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition); /* Transición al hacer hover */
+  text-decoration: none;
+  display: inline-block;
+}
+
+.button:hover {
+  background-color: var(--secondary-color); /* Color del fondo al hacer hover */
+  transform: translateY(-1px); /* Efecto de movimiento al hacer hover */
+}
+
+/* Estilos para el botón secundario */
+.button.secondary {
+  background-color: var(--light-background); /* Fondo del botón secundario */
+  color: var(--text-color); /* Color del texto del botón secundario */
+  border: 1px solid var(--light-text); /* Borde del botón secundario */
+}
+
+.button.secondary:hover {
+  background-color: var(--text-color); /* Fondo al hacer hover */
+  color: white; /* Color del texto al hacer hover */
+}
+
+/* Estilos del footer */
+footer {
+  background-color: var(--text-color); /* Fondo del footer */
+  color: white; /* Color del texto en el footer */
+  padding: 2rem;
+  margin-top: auto;
+}
+
+footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Diseño de columnas en el footer */
+  gap: 2rem;
+}
+
+footer h4 {
+  color: white; /* Color del título en el footer */
+  margin-bottom: 1rem;
+}
+
+footer a {
+  color: var(--light-text); /* Color de los enlaces en el footer */
+  text-decoration: none;
+  transition: var(--transition); /* Transición al hacer hover */
+}
+
+footer a:hover {
+  color: white; /* Color al hacer hover sobre los enlaces */
+}
+
+/* Diseño responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+  nav {
+    padding: 1rem; /* Ajuste de padding en la navbar */
+  }
+
+  nav .nav-links {
+    gap: 1rem; /* Reducción del espacio entre enlaces */
+  }
+
+  main {
+    padding: 1rem; /* Ajuste de padding en el contenido principal */
+  }
+
+  h1 {
+    font-size: 2rem; /* Reducción del tamaño de la fuente para h1 */
+  }
+
+  h2 {
+    font-size: 1.75rem; /* Reducción del tamaño de la fuente para h2 */
+  }
+
+  h3 {
+    font-size: 1.25rem; /* Reducción del tamaño de la fuente para h3 */
+  }
+}
+
+@media (max-width: 480px) {
+  nav .container {
+    flex-direction: column; /* Cambio de dirección a columna en la navbar */
+    gap: 1rem; /* Ajuste de espacio entre elementos */
+  }
+
+  nav .nav-links {
+    flex-direction: column; /* Cambio a columna en los enlaces */
+    align-items: center; /* Centrado de los enlaces */
+  }
+
+  .button {
+    width: 100%; /* Botones ocupan todo el ancho */
+    text-align: center; /* Centrado del texto en los botones */
+  }
+
+  footer .container {
+    grid-template-columns: 1fr; /* Diseño de una sola columna en el footer */
+  }
+}
+
+/* Utilidades comunes */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.text-center {
+  text-align: center; /* Centrado de texto */
+}
+
+.grid {
+  display: grid;
+  gap: 2rem; /* Espacio entre elementos en grid */
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr); /* Dos columnas en el grid */
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr); /* Tres columnas en el grid */
+}
+
+@media (max-width: 768px) {
+  .grid-cols-2,
+  .grid-cols-3 {
+    grid-template-columns: 1fr; /* Reducción de columnas a una sola en pantallas pequeñas */
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(20px); /* Desplazamiento inicial hacia abajo */
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0); /* Restauración a la posición original */
   }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards; /* Animación de desvanecimiento */
 }

@@ -1,0 +1,279 @@
+/* Definición de variables */
+:root {
+  --color-white: #fff;
+  --color-primary: #007bff;
+  --color-primary-hover: #0056b3;
+  --color-dark-overlay: rgba(0, 0, 0, 0.5);
+  --color-accent: #1c713d;
+  --color-error: #ffffff;
+  --color-success: #33e25c;
+  --box-shadow-light: 0 10px 25px rgba(0, 0, 0, 0.349);
+  --box-shadow-hover: 0 10px 20px rgba(0, 123, 255, 0.3);
+  --transition-time: 0.3s ease;
+  --font-size-large: 2.5rem;
+  --font-size-medium: 1.1rem;
+  --font-size-small: 0.9rem;
+}
+
+/* Contenedor del formulario */
+.login-container {
+  background-image: url('../screens/form.jpg');
+  opacity: 95%;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: var(--box-shadow-light);
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  margin: 75px auto;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+  min-height: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  animation: breath 4s infinite ease-in-out;
+}
+
+@keyframes breath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Efecto hover del contorno y resplandor */
+.login-container:hover {
+  border: 3px solid #000000e5;
+  box-shadow: 0 0 15px 10px rgba(33, 231, 49, 0.7);
+}
+
+/* Título del formulario */
+.login-title {
+  font-size: var(--font-size-large);
+  color: var(--color-white);
+  margin-bottom: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+/* Estilos del formulario */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  text-align: left;
+}
+
+label {
+  font-size: var(--font-size-small);
+  color: var(--color-white);
+  margin-bottom: 8px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #fdfefd;
+  border-radius: 10px;
+  font-size: var(--font-size-medium);
+  color: #333;
+  background-color: #f9f9f9;
+  transition: border-color var(--transition-time), box-shadow var(--transition-time);
+}
+
+input:focus,
+select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+/* Botón de mostrar/ocultar contraseña */
+.toggle-password {
+  background: none;
+  border: none;
+  color: var(--color-white);
+  cursor: pointer;
+  font-size: var(--font-size-small);
+  text-align: left;
+  margin-top: 8px;
+  padding: 0;
+  transition: color var(--transition-time);
+}
+
+.toggle-password:hover {
+  color: #c7f4d7;
+}
+
+/* Estilo general de los mensajes de error */
+.error-message {
+  background-color: #f8d7da; /* Fondo suave y rojo */
+  color: #721c24; /* Color del texto (rojo oscuro) */
+  border: 1px solid #f5c6cb; /* Borde suave */
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center; /* Centra el icono y el texto */
+  font-size: 0.9rem;
+}
+
+/* Icono al lado del mensaje de error */
+.error-message::before {
+  content: "⚠️"; /* Puedes cambiar este ícono a otro si prefieres */
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+ /*Estilo general para mensaje de recuperar contraseña*/
+ .success-message {
+  background-color: #d4edda; /* Fondo suave y verde */
+  color: #155724; /* Color del texto (verde oscuro) */
+  border: 1px solid #c3e6cb; /* Borde suave */
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center; /* Centra el icono y el texto */
+  font-size: 0.9rem;
+
+
+}
+
+
+
+
+
+
+
+/* Asegura que el texto de error se ve bien en pantallas pequeñas */
+@media (max-width: 600px) {
+  .error-message {
+    font-size: 0.8rem;
+    padding: 8px;
+  }
+
+  .error-message::before {
+    font-size: 1rem;
+  }
+}
+
+
+
+
+
+/* Estilo de los botones */
+.submit-button {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color var(--transition-time), transform 0.2s ease, box-shadow var(--transition-time);
+  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.1);
+}
+
+.submit-button:hover {
+  background-color: #20af59b6;
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+.submit-button:active {
+  transform: translateY(2px);
+}
+
+/* Estilo para el cambio entre formularios */
+.toggle-form {
+  margin-top: 20px;
+  background: none;
+  border: none;
+  color: var(--color-white);
+  cursor: pointer;
+  font-size: var(--font-size-small);
+  text-decoration: underline;
+  transition: color var(--transition-time);
+}
+
+.toggle-form:hover {
+  color: #d3f5e7;
+}
+
+/* Botón "Olvidaste tu contraseña" */
+.button-password {
+  background-color: rgba(71, 71, 71, 0.077);
+  color: var(--color-white);
+  border: none;
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 8px 0;
+  transition: color var(--transition-time), transform var(--transition-time), box-shadow var(--transition-time);
+}
+
+.button-password:hover {
+  color: #d9f8ee;
+  transform: scale(1.05);
+  box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+}
+
+.button-password:focus {
+  outline: none;
+  box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5);
+}
+
+/* Media Queries para hacerlo responsivo */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 20px;
+    max-width: 90%;
+    min-height: 300px;
+  }
+
+  .login-title {
+    font-size: 2rem;
+  }
+
+  .submit-button {
+    font-size: 1rem;
+    padding: 12px 25px;
+  }
+
+  .toggle-password,
+  .button-password {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 15px;
+    max-width: 95%;
+  }
+
+  .login-title {
+    font-size: 1.7rem;
+  }
+
+  .submit-button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  .toggle-password,
+  .button-password {
+    font-size: 0.8rem;
+  }
+}

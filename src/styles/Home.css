@@ -1,0 +1,326 @@
+/* Estilos generales- VENTANA INCIAL */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #f4f4f4;
+  height: 100%; /* Asegura que el cuerpo ocupe todo el alto de la ventana */
+  overflow-x: hidden; /* Evita que el contenido se desplace horizontalmente */
+}
+
+/* ============================
+  Sección Home (Encabezado)
+  ============================ */
+.home-container {
+  background: linear-gradient(135deg, #5c427800 0%, #343639d3 100%);
+  color: white;
+  text-align: center;
+  padding: 100px 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  transition: background 1s ease;
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.home-description {
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+  line-height: 1.6;
+  max-width: 600px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.home-btn {
+  text-decoration: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #0ab75e;
+  font-size: 1rem;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.home-btn:hover {
+  background-color: #11cb7771;
+}
+
+/* Animación de entrada al hacer scroll */
+.home-container:hover .home-title,
+.home-container:hover .home-description,
+.home-container:hover .home-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================
+  Sección de más información
+  ============================ */
+.more-info-section {
+  background-color: #f8f9fa;
+  padding: 60px 20px;
+  text-align: center;
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+}
+
+.more-info-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.more-info-section p {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+}
+
+.feature-card {
+  background: #ffffff0a;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.019);
+  width: 250px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.193);
+}
+
+.feature-card i {
+  font-size: 2.5rem;
+  color: #54a91cb9;
+  margin-bottom: 10px;
+}
+
+.feature-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-size: 1rem;
+}
+
+/* ============================
+  Sección de testimonios
+  ============================ */
+.testimonials-section {
+  background-color: #343639b5;
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.testimonials-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+}
+
+.testimonials {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.testimonial-card {
+  background: #ffffffec;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+.testimonial-card p {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.testimonial-card span {
+  display: block;
+  margin-top: 15px;
+  font-style: italic;
+  color: #777;
+}
+
+/* ============================
+  Sección de llamada a la acción
+  ============================ */
+.cta-section {
+  background-color: #191a1a84;
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.cta-btn {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background-color:  #0ab75e;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.cta-btn:hover {
+  background-color:  #11cb7771;
+}
+/* ============================
+  Sección de contacto
+  ============================ */
+  .contact-section {
+    background-color: #f8f9fa;
+    padding: 60px 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    position: relative;  /* Asegura que el contenido se pueda desplazar si es necesario */
+  }
+  
+  .contact-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 20px;  /* Espacio adicional en la parte inferior */
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 4px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+  
+  .contact-form button {
+    background-color:  #0ab75e;  /* Color de fondo */
+    color: white;  /* Color del texto */
+    padding: 12px 30px;  /* Espaciado */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;  /* Asegura que el botón se vea como un bloque */
+    margin-top: 10px;  /* Espacio superior */
+  }
+  
+  .contact-form button:hover {
+    background-color: #11cb7771;  /* Color de fondo cuando se pasa el ratón */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);  /* Sombra más pronunciada en hover */
+  }
+  
+  /* Ajuste del Footer */
+  footer {
+    position: relative;  /* Asegura que el footer no se superponga con el contenido */
+    margin-top: 50px;  /* Añade espacio antes del footer */
+    z-index: 1;  /* Asegura que el footer no se superponga */
+  }
+  
+  /* Estilos adicionales para mejorar la visibilidad en dispositivos móviles */
+  @media screen and (max-width: 768px) {
+    .contact-form button {
+      width: 100%;  /* Hace que el botón ocupe todo el ancho disponible */
+      font-size: 1rem;  /* Ajusta el tamaño del texto en pantallas pequeñas */
+    }
+  }
+  
+
+
+/* ============================
+  Font Awesome Icons
+  ============================ */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+
+/* ============================
+  Estilos de Scroll (Neón)
+  ============================ */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f4f4f4;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 2px solid #343639;
+  box-shadow: 0 0 5px #10ff1c; /* Efecto de neón */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #31c62c;
+  box-shadow: 0 0 15px #2575fc, 0 0 5px #05ff8e;
+}
+
+/* ============================
+  Media Query para dispositivos móviles
+  ============================ */
+@media screen and (max-width: 768px) {
+  .home-title {
+    font-size: 2rem; /* Reducir el tamaño de la fuente en dispositivos móviles */
+  }
+
+  .home-description {
+    font-size: 1rem;
+    text-align: center; /* Red
+  }
+
+  .features {
+    flex-direction: column; /* Mostrar las tarjetas de características en columna */
+    align-items: center;
+  }
+
+  .feature-card {
+    margin-bottom: 20px; /* Separación entre las tarjetas */
+    width: 80%; /* Hacer que las tarjetas ocupen más espacio */
+  }
+}

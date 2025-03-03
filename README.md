@@ -1,72 +1,43 @@
-# Getting Started with Create React App
+### ACTUALIZACION DE LA PAGINA WEB
+La pagina web desarrollada fue modificada nuevamente para cambiar apsectos visuales
+y de funcionalidad. Por el momento la programacion esta mucho mejor organizada para encontrar el material visual e interactivo de manera mas directa
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Estructura de las carpetas:
+* Public------> images
+* Components
+* Firebase
+* PAGES
+* Screens
+* Styles
 
-## Available Scripts
+En la carpeta de public dentro de esta se creo otra subcarpeta llamada images en esta se diseño para guardar imagenes de uso general ademas de adjuntar un archivo llamado Geoportal.html en el que se encuentra configurado un borrador de como se visualizaria el mapa.
+Para la carpeta de components en esta se coloco 3 archivos principales
+* Footer.js --------> barra inferior de la pagina principal 
+* Home.js  --------> Pantalla incial e informacion incial 
+* Navbar.js  --------> Barra superior con opciones tangibles
 
-In the project directory, you can run:
+La carpeta de firebase simplemente guarda la configuracion de la
+base de datos con firebase (credenciales.js)
 
-### `npm start`
+En la carpeta de pages se integra 2 archivos importantes:
+* IniciarSesion.jsx   --------> Configuracion de los servicios de autenticacionn y creacion de usuario.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+* Servicios.jsx  --------> Ventana de servicios que se muestran en tarjetas, esto se puede modificar la informacion.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Para la carpeta denominada "SCREENS" en esta se decidio colocar archivos
+claves como;
+* AdminView.jsx  -------->Vista de administador, adminisitra usuarios y archivos
+* UserView.jsx --------> Vista de usuario, interactura con la informacion.
+  Cada uno de estos incluye de manera directa su estilo css.
+  * Login.js  --------> Configuracion simple para el inicio de secion
+    
+Finalmente la carpeta de styles simplelmente guarda todos los estilos de 
+todos los archivos ya antes mencionados para poder ser modificados.
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# smartfaming_service
+# Farmservice_smart
+# Farmservice_smart
 # Farmservice_smart
 # Farmservice_smart

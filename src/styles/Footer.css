@@ -1,0 +1,102 @@
+/* Estilos generales- PIE DE LA PAGINA WEB*/
+.footer {
+  background-color: #2c3e5072; /* Fondo oscuro con opacidad */
+  color: #ecf0f1; /* Texto claro */
+  text-align: center;
+  padding: 20px 10px; /* Padding ajustado */
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2); /* Sombra elegante */
+  z-index: 10; /* Asegura que el footer esté por encima de otros elementos */
+}
+
+/* Contenido del footer */
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center; /* Asegura que el texto siempre esté centrado */
+  padding: 10px;
+}
+
+/* Texto del footer */
+.footer p {
+  margin: 5px 0;
+  font-size: 1rem;
+  line-height: 1.4; /* Mejora la legibilidad */
+  letter-spacing: 0.5px; /* Un poco de espaciado para el texto */
+  opacity: 0.8; /* Ligera opacidad para un efecto más suave */
+}
+
+/* Enlaces sociales */
+.social-links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap; /* Permite que los íconos se ajusten en filas */
+  gap: 15px;
+  justify-content: center;
+}
+
+.social-links li {
+  display: inline;
+}
+
+.social-links a {
+  color: #ecf0f1; /* Color del texto */
+  font-size: 1.5rem; /* Tamaño de los íconos */
+  transition: color 0.3s ease, transform 0.3s ease; /* Animación en hover */
+  text-decoration: none; /* Elimina el subrayado */
+}
+
+.social-links a:hover {
+  color: #14be33; /* Color verde en hover */
+  transform: scale(1.1); /* Aumenta ligeramente el tamaño en hover */
+}
+
+/* Responsividad */
+
+/* Para pantallas medianas */
+@media (max-width: 768px) {
+  .footer {
+    padding: 15px 10px; /* Menor relleno en pantallas medianas */
+  }
+
+  .footer-content {
+    gap: 8px;
+  }
+
+  .footer p {
+    font-size: 0.9rem; /* Reduce el tamaño del texto */
+  }
+
+  .social-links {
+    gap: 10px; /* Menor espacio entre íconos */
+  }
+
+  .social-links a {
+    font-size: 1.3rem; /* Ajusta el tamaño de los íconos */
+  }
+}
+
+/* Para pantallas pequeñas */
+@media (max-width: 480px) {
+  .footer {
+    padding: 10px 5px; /* Menor relleno en pantallas pequeñas */
+  }
+
+  .footer p {
+    font-size: 0.8rem; /* Texto más pequeño */
+    line-height: 1.2; /* Menor interlineado */
+  }
+
+  .social-links {
+    gap: 8px; /* Menor espacio entre íconos */
+  }
+
+  .social-links a {
+    font-size: 1.2rem; /* Ajusta el tamaño de los íconos */
+  }
+}

@@ -1,0 +1,151 @@
+/*PERSONALIZACION BARRA SUPERIOR */
+:root {
+  /* Variables para colores y valores comunes */
+  --navbar-bg: rgba(0, 0, 0, 0.7);
+  --navbar-bg-scrolled: rgba(0, 0, 0, 0.9);
+  --navbar-bg-hover: rgba(0, 0, 0, 0.85);
+  --accent-color: #0eaa66;
+  --accent-color-hover: #14aa5d92;
+  --logo-hover: #f39c12;
+  --text-color: #fff;
+  --transition-speed: 0.3s;
+}
+
+.navbar {
+  background: var(--navbar-bg);
+  padding-block: 15px;
+  padding-inline: 40px;
+  position: fixed;
+  inset: 0 0 auto 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid var(--accent-color);
+  border-radius: 5px;
+  transition: background var(--transition-speed) ease, padding var(--transition-speed) ease;
+}
+
+.navbar.scrolled {
+  padding-block: 10px;
+  padding-inline: 40px;
+  background: var(--navbar-bg-scrolled);
+}
+
+.navbar:hover {
+  background: var(--navbar-bg-hover);
+}
+
+.logo {
+  color: var(--text-color);
+  font-size: clamp(26px, 2vw, 30px);
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color var(--transition-speed) ease;
+}
+
+.logo:hover {
+  color: var(--logo-hover);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: clamp(16px, 1.5vw, 18px);
+  font-weight: 500;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.nav-links a:hover {
+  background-color: var(--accent-color-hover);
+  transform: scale(1.05);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: min(100%, 1200px);
+  margin-inline: auto;
+}
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 768px) {
+  .navbar {
+    padding-inline: 20px;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--navbar-bg-scrolled);
+    width: 100%;
+    padding: 20px;
+    opacity: 0;               /* Invisible por defecto */
+    visibility: hidden;       /* No visible por defecto */
+    transform: translateY(-10px); /* Desplazado hacia arriba */
+    transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease, visibility var(--transition-speed) ease;
+  }
+
+  .nav-links.active {
+    opacity: 1;               /* Visible cuando se activa */
+    visibility: visible;      /* Visibilidad activa */
+    transform: translateY(0); /* El menú se desliza hacia abajo */
+  }
+
+  /* Asegúrate de que el botón de hamburguesa tenga fondo transparente */
+  .navbar-toggle {
+    display: block;
+    background: none;   /* Sin fondo */
+    border: none;       /* Sin borde */
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1100;
+  }
+
+  .navbar-toggle span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 5px 0;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .navbar-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .navbar-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .navbar-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+}
+
+@media (min-width: 769px) {
+  /* Ocultar el botón en pantallas grandes */
+  .navbar-toggle {
+    display: none;
+  }
+}
