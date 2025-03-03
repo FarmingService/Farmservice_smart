@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/Home.css';
-// ventana web app servicios de mapeo
+// ventana incial 
 const Home = () => {
   // Estado para manejar la visibilidad de cada sección
   const [visibleContent, setVisibleContent] = useState(null);
