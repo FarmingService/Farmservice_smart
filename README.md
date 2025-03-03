@@ -36,8 +36,3 @@ todos los archivos ya antes mencionados para poder ser modificados.
 
 
 
-# smartfaming_service
-# Farmservice_smart
-# Farmservice_smart
-# Farmservice_smart
-# Farmservice_smart
