@@ -173,10 +173,7 @@ const AdminView = () => {
         <div className="logo">
           <h2>Admin Panel</h2>
         </div>
-        <div className="avatar">
-          <img src="/api/placeholder/80/80" alt="Admin avatar" />
-          <h3>Administrador</h3>
-        </div>
+        
         <div className="sidebar-menu">
           <button 
             className={activeSection === "geoportal" ? "active" : ""}
