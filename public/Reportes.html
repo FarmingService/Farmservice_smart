@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventana de Reportes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .main-content {
+            display: flex;
+            gap: 20px;
+        }
+        .sidebar {
+            width: 250px;
+            border-right: 1px solid #eee;
+            padding-right: 15px;
+        }
+        .files-area {
+            flex: 1;
+        }
+        .folder-list {
+            list-style: none;
+            padding: 0;
+        }
+        .folder-item {
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .folder-item:hover {
+            background-color: #f0f7ff;
+        }
+        .folder-active {
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        .file-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-icon {
+            margin-right: 10px;
+            color: #5c7cfa;
+        }
+        .folder-icon {
+            margin-right: 10px;
+            color: #fd7e14;
+        }
+        .btn {
+            background-color: #4263eb;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn:hover {
+            background-color: #364fc7;
+        }
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        .btn-danger {
+            background-color: #e03131;
+        }
+        .btn-danger:hover {
+            background-color: #c92a2a;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Ventana de Reportes</h1>
+            <div>
+                <button class="btn" id="btnSubirArchivo">
+                    <span>⬆️</span> Subir Archivo
+                </button>
+                <button class="btn" id="btnNuevaCarpeta">
+                    <span>📁</span> Nueva Carpeta
+                </button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <h3>Carpetas</h3>
+                <ul class="folder-list" id="folderList">
+                    <!-- Las carpetas se cargarán dinámicamente -->
+                </ul>
+            </div>
+            
+            <div class="files-area">
+                <h3 id="currentFolderTitle">Seleccione una carpeta</h3>
+                <div id="filesContainer">
+                    <ul class="file-list" id="fileList">
+                        <!-- Los archivos se cargarán dinámicamente -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para subir archivo -->
+    <div class="modal" id="modalUpload">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Subir Archivo</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="fileInput">Seleccione un archivo:</label>
+                    <input type="file" id="fileInput" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="folderSelect">Carpeta:</label>
+                    <select id="folderSelect" class="form-control">
+                        <!-- Opciones de carpetas -->
+                    </select>
+                </div>
+                <button type="submit" class="btn">Subir a Firebase</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para editar carpeta -->
+    <div class="modal" id="modalEditFolder">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Carpeta</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="editFolderForm">
+                <div class="form-group">
+                    <label for="folderName">Nombre de la carpeta:</label>
+                    <input type="text" id="folderName" class="form-control">
+                    <input type="hidden" id="originalFolderName">
+                </div>
+                <button type="submit" class="btn">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal para nueva carpeta -->
+    <div class="modal" id="modalNewFolder">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Carpeta</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="newFolderForm">
+                <div class="form-group">
+                    <label for="newFolderName">Nombre de la carpeta:</label>
+                    <input type="text" id="newFolderName" class="form-control">
+                </div>
+                <button type="submit" class="btn">Crear Carpeta</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Datos de prueba - Normalmente esto vendría de Firebase
+        let carpetas = ['Reportes 2024', 'Documentos', 'Archivos Históricos'];
+        let archivos = [
+            { id: 1, nombre: 'Reporte Enero.pdf', carpeta: 'Reportes 2024' },
+            { id: 2, nombre: 'Reporte Febrero.pdf', carpeta: 'Reportes 2024' },
+            { id: 3, nombre: 'Manual.docx', carpeta: 'Documentos' }
+        ];
+        let carpetaActual = '';
+
+        // Elementos DOM
+        const btnSubirArchivo = document.getElementById('btnSubirArchivo');
+        const btnNuevaCarpeta = document.getElementById('btnNuevaCarpeta');
+        const folderList = document.getElementById('folderList');
+        const fileList = document.getElementById('fileList');
+        const currentFolderTitle = document.getElementById('currentFolderTitle');
+        
+        // Modales
+        const modalUpload = document.getElementById('modalUpload');
+        const modalEditFolder = document.getElementById('modalEditFolder');
+        const modalNewFolder = document.getElementById('modalNewFolder');
+        const closeBtns = document.querySelectorAll('.close');
+        
+        // Formularios
+        const uploadForm = document.getElementById('uploadForm');
+        const editFolderForm = document.getElementById('editFolderForm');
+        const newFolderForm = document.getElementById('newFolderForm');
+        const folderSelect = document.getElementById('folderSelect');
+
+        // Cargar carpetas iniciales
+        function cargarCarpetas() {
+            folderList.innerHTML = '';
+            folderSelect.innerHTML = '';
+            
+            carpetas.forEach(carpeta => {
+                // Agregar a la lista de carpetas
+                const li = document.createElement('li');
+                li.className = 'folder-item ' + (carpeta === carpetaActual ? 'folder-active' : '');
+                li.innerHTML = `
+                    <span><span class="folder-icon">📁</span>${carpeta}</span>
+                    <div class="actions">
+                        <button class="btn btn-sm edit-folder" data-folder="${carpeta}">✏️</button>
+                    </div>
+                `;
+                li.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('edit-folder')) {
+                        seleccionarCarpeta(carpeta);
+                    }
+                });
+                folderList.appendChild(li);
+                
+                // Agregar al select de carpetas
+                const option = document.createElement('option');
+                option.value = carpeta;
+                option.textContent = carpeta;
+                folderSelect.appendChild(option);
+            });
+            
+            // Agregar event listeners para los botones de editar
+            document.querySelectorAll('.edit-folder').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const carpeta = this.getAttribute('data-folder');
+                    abrirModalEditarCarpeta(carpeta);
+                });
+            });
+        }
+
+        // Cargar archivos de la carpeta actual
+        function cargarArchivos() {
+            fileList.innerHTML = '';
+            if (!carpetaActual) return;
+            
+            const archivosFiltrados = archivos.filter(archivo => archivo.carpeta === carpetaActual);
+            
+            if (archivosFiltrados.length === 0) {
+                fileList.innerHTML = '<li class="file-item">No hay archivos en esta carpeta</li>';
+                return;
+            }
+            
+            archivosFiltrados.forEach(archivo => {
+                const li = document.createElement('li');
+                li.className = 'file-item';
+                li.innerHTML = `
+                    <span><span class="file-icon">📄</span>${archivo.nombre}</span>
+                    <div class="actions">
+                        <button class="btn btn-sm btn-danger delete-file" data-id="${archivo.id}">🗑️</button>
+                    </div>
+                `;
+                fileList.appendChild(li);
+            });
+            
+            // Agregar event listeners para los botones de eliminar
+            document.querySelectorAll('.delete-file').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    eliminarArchivo(id);
+                });
+            });
+        }
+
+        // Seleccionar una carpeta
+        function seleccionarCarpeta(carpeta) {
+            carpetaActual = carpeta;
+            currentFolderTitle.textContent = `Carpeta: ${carpeta}`;
+            cargarCarpetas();
+            cargarArchivos();
+        }
+
+        // Abrir modal para editar carpeta
+        function abrirModalEditarCarpeta(carpeta) {
+            document.getElementById('folderName').value = carpeta;
+            document.getElementById('originalFolderName').value = carpeta;
+            modalEditFolder.style.display = 'block';
+        }
+
+        // Guardar cambios de carpeta
+        function editarCarpeta(original, nuevo) {
+            // Actualizar el nombre de la carpeta
+            carpetas = carpetas.map(c => c === original ? nuevo : c);
+            
+            // Actualizar la carpeta en los archivos
+            archivos = archivos.map(archivo => {
+                if (archivo.carpeta === original) {
+                    return { ...archivo, carpeta: nuevo };
+                }
+                return archivo;
+            });
+            
+            // Si la carpeta actual era la editada, actualizarla
+            if (carpetaActual === original) {
+                carpetaActual = nuevo;
+            }
+            
+            // Actualizar la interfaz
+            cargarCarpetas();
+            cargarArchivos();
+            
+            console.log(`Carpeta "${original}" ha sido renombrada a "${nuevo}" en Firebase`);
+        }
+
+        // Crear nueva carpeta
+        function crearCarpeta(nombre) {
+            carpetas.push(nombre);
+            cargarCarpetas();
+            console.log(`Nueva carpeta "${nombre}" creada en Firebase`);
+        }
+
+        // Eliminar archivo
+        function eliminarArchivo(id) {
+            if (confirm('¿Está seguro de que desea eliminar este archivo?')) {
+                archivos = archivos.filter(archivo => archivo.id !== id);
+                cargarArchivos();
+                console.log(`Archivo con ID ${id} eliminado de Firebase`);
+            }
+        }
+
+        // Subir archivo a Firebase
+        function subirArchivo(nombre, carpeta) {
+            const nuevoId = archivos.length > 0 ? Math.max(...archivos.map(a => a.id)) + 1 : 1;
+            archivos.push({
+                id: nuevoId,
+                nombre: nombre,
+                carpeta: carpeta
+            });
+            
+            if (carpeta === carpetaActual) {
+                cargarArchivos();
+            }
+            
+            console.log(`Archivo "${nombre}" subido a la carpeta "${carpeta}" en Firebase`);
+        }
+
+        // Event Listeners
+        btnSubirArchivo.addEventListener('click', function() {
+            modalUpload.style.display = 'block';
+        });
+
+        btnNuevaCarpeta.addEventListener('click', function() {
+            modalNewFolder.style.display = 'block';
+        });
+
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const selectedFolder = document.getElementById('folderSelect').value;
+            
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                subirArchivo(fileName, selectedFolder);
+                modalUpload.style.display = 'none';
+                fileInput.value = '';
+            } else {
+                alert('Por favor seleccione un archivo');
+            }
+        });
+
+        editFolderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const original = document.getElementById('originalFolderName').value;
+            const nuevo = document.getElementById('folderName').value;
+            
+            if (nuevo) {
+                editarCarpeta(original, nuevo);
+                modalEditFolder.style.display = 'none';
+            } else {
+                alert('El nombre de la carpeta no puede estar vacío');
+            }
+        });
+
+        newFolderForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('newFolderName').value;
+            
+            if (nombre) {
+                crearCarpeta(nombre);
+                modalNewFolder.style.display = 'none';
+                document.getElementById('newFolderName').value = '';
+            } else {
+                alert('El nombre de la carpeta no puede estar vacío');
+            }
+        });
+
+        // Iniciar la aplicación
+        cargarCarpetas();
+        
+        // Cerrar modales cuando se hace clic fuera de ellos
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

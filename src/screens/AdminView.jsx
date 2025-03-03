@@ -177,22 +177,23 @@ const AdminView = () => {
         <div className="sidebar-menu">
           <button 
             className={activeSection === "geoportal" ? "active" : ""}
-            onClick={() => window.open('../Geoportal.html', '_blank')}
+            onClick={() => window.open('../Geoportal.html', '_blank')} // seccion abrir geoportal
           >
             <FaMap /> <span>Geoportal</span>
           </button>
           <button 
             className={activeSection === "metricas" ? "active" : ""}
-            onClick={() => window.open("../Metricas.html", '_blank')}
+            onClick={() => window.open("../Metricas.html", '_blank')} // seccion - abrir metricas
           >
             <FaChartBar /> <span>Métricas</span>
+
           </button>
           <button 
-            className={activeSection === "reportes" ? "active" : ""}
-            onClick={() => window.open("/admin/informe", "_self")}
+         className={activeSection === "reportes" ? "active" : ""}
+          onClick={() => window.open("../Reportes.html", "_blank")}
           >
-            <FaFileAlt /> <span>Reportes</span>
-          </button>
+         <FaFileAlt /> <span>Reportes</span>
+        </button>
           <button 
             className={activeSection === "configuracion" ? "active" : ""}
             onClick={() => setActiveSection("configuracion")}
