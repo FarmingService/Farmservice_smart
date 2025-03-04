@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from 'firebase/storage'; 
 import { 
-  FaFolder, FaFolderOpen, FaSearch, FaBars, FaChartBar, FaMap, FaFileAlt, FaCog, FaSignOutAlt 
+  FaFolder, FaFolderOpen,FaBars, FaChartBar, FaMap, FaFileAlt, FaCog, FaSignOutAlt 
 } from 'react-icons/fa';
 import firebaseApp from '../firebase/credenciales';
 import IniciarSesion from '../pages/IniciarSesion';
@@ -212,7 +212,7 @@ const UserView = () => {
         <div className="folders-section">
           <h2>Mis Carpetas</h2>
           <div className="search-bar">
-            <FaSearch className="search-icon" />
+           
             <input
               type="text"
               placeholder="Buscar carpeta..."
