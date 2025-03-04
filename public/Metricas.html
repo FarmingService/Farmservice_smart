@@ -3,627 +3,196 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Métricas del Cultivo</title>
-
-  <!-- Chart.js y plugin zoom para gráficos interactivos -->
+  <title>Metricas de cultivo</title>
+  
+  <!-- Cargar Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"></script>
 
-  <!-- Font Awesome para iconos -->
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-  <!-- Leaflet.js para mapas -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-  <!-- SweetAlert2 para alertas personalizadas -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  <!-- Cargar SheetJS para leer el Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.17.0/dist/xlsx.full.min.js"></script>
+  
   <style>
-    /* Estilos generales y transiciones */
     body {
       font-family: Arial, sans-serif;
-      background-color: #f7f9fb;
-      color: #333;
       margin: 0;
-      padding: 0;
-      transition: background-color 0.5s, color 0.5s;
-    }
-    /* Modo nocturno global */
-    body.night-mode {
-      background-color: #121212;
-      color: #e0e0e0;
-    }
-    /* Barra superior fija */
-    header.top-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background-color: #007bff;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      z-index: 1000;
-      transition: background-color 0.5s, color 0.5s;
-    }
-    body.night-mode header.top-bar {
-      background-color: #333;
-    }
-    header.top-bar .btn {
-      background-color: transparent;
-      border: none;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      transition: color 0.3s;
-    }
-    header.top-bar .btn i {
-      margin-right: 5px;
-    }
-    header.top-bar .btn:hover {
-      color: #cce5ff;
-    }
-    /* Contenedor principal */
-    .container {
-      width: 100%;
-      max-width: 1200px;
       padding: 20px;
-      margin: 80px auto 20px; /* Se deja espacio para la barra superior */
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: background-color 0.5s, color 0.5s;
     }
-    body.night-mode .container {
-      background-color: #1e1e1e;
+    #chartContainer {
+      width: 80%;
+      margin: 0 auto;
     }
-    /* Botones generales */
-    .btn {
-      padding: 10px 15px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 10px;
-      transition: background-color 0.3s, transform 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    input[type="file"] {
+      margin-bottom: 20px;
     }
-    .btn:hover {
-      background-color: #0056b3;
-      transform: scale(1.02);
-    }
-    .btn i {
-      margin-right: 8px;
-    }
-    /* Contenedor de secciones */
-    .sections {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      width: 100%;
-      margin-top: 20px;
-    }
-    .section {
-      flex: 1 1 300px;
-      margin: 10px;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: background-color 0.5s, color 0.5s;
-    }
-    body.night-mode .section {
-      background-color: #1e1e1e;
-    }
-    /* Estilos de la tabla */
-    table {
-      width: 90%;
-      margin-bottom: 0px;
-      border-collapse: collapse;
-      transition: background-color 0.5s, color 0.5s;
-    }
-    th, td {
-      padding: 12px;
+    #loading {
+      display: none;
       text-align: center;
-      font-size: 1.1rem;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background-color: #007bff;
-      color: white;
-    }
-    body.night-mode table {
-      background-color: #2e2e2e;
-      color: #e0e0e0;
-    }
-    body.night-mode th {
-      background-color: #444;
-    }
-    /* Inputs */
-    input {
-      width: 70%;
-      padding: 10px;
-      margin: 10px 0;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      transition: background-color 0.5s, color 0.5s, border-color 0.5s;
-    }
-    body.night-mode input {
-      background-color: #333;
-      color: #e0e0e0;
-      border: 1px solid #555;
-    }
-    /* Gráfico y mapa */
-    canvas {
-      width: 100%;
-      max-width: 800px;
-      margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: box-shadow 0.5s;
-    }
-    #map {
-      height: 400px;
-      width: 100%;
-      max-width: 800px;
-      margin: 40px auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      transition: box-shadow 0.5s;
-    }
-    /* Lista de ubicaciones */
-    .locations-list {
+      font-size: 1.2rem;
       margin-top: 20px;
-      list-style: none;
-      padding: 0;
-      width: 100%;
     }
-    .locations-list li {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      font-size: 1.1rem;
-      background-color: #f1f5f9;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      transition: background-color 0.3s, transform 0.3s;
-    }
-    .locations-list li:hover {
-      background-color: #e9ecef;
-      transform: scale(1.01);
-    }
-    .locations-list li button {
-      background-color: #e74c3c;
-      color: white;
-      padding: 6px 12px;
-      border: none;
+    .alert {
+      padding: 15px;
+      margin-top: 20px;
       border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      margin-left: 5px;
-      transition: background-color 0.3s, transform 0.3s;
+      font-size: 1.1rem;
     }
-    .locations-list li button.evaluate {
-      background-color: #28a745;
+    .alert-info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
     }
-    .locations-list li button.evaluate:hover {
-      background-color: #218838;
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
     }
-    .locations-list li button:hover {
-      background-color: #c0392b;
-      transform: scale(1.02);
+    .alert-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
     }
-    body.night-mode .locations-list li {
-      background-color: #2e2e2e;
-      color: #e0e0e0;
-    }
-    /* Media Queries */
-    @media (max-width: 768px) {
-      .container { padding: 10px; }
-      h1 { font-size: 2rem; }
-      .btn { font-size: 1rem; padding: 10px 0; }
-      table { font-size: 0.9rem; }
-      canvas, #map { max-width: 100%; }
-      .locations-list li { font-size: 1rem; }
-      .locations-list li button { font-size: 0.85rem; }
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
     }
   </style>
 </head>
 <body>
-  <!-- Barra superior con botones -->
-  <header class="top-bar">
-    <button id="closeWindow" class="btn"><i class="fas fa-times"></i> Salir</button>
-    <button id="toggleMode" class="btn"><i class="fas fa-moon"></i> Modo Noche</button>
-  </header>
 
-  <div class="container">
-    <h1><i class="fas fa-seedling"></i> Evaluación de Cultivos</h1>
+  <h1>Evaluacion de resultados</h1>
+  
+  <!-- Formulario para cargar archivos Excel -->
+  <input type="file" id="excelFiles" multiple />
+  
+  <div id="chartContainer">
+    <canvas id="combinedChart"></canvas>
+  </div>
 
-    <div class="sections">
-      <!-- Sección de datos -->
-      <div class="section">
-        <h2>Datos del Cultivo</h2>
-        <table>
-          <tr><th>Parámetro</th><th>Valor</th></tr>
-          <tr>
-            <td>🌍 Nombre del lugar</td>
-            <td><input type="text" id="placeName" placeholder="Ej: Finca El Sol" required></td>
-          </tr>
-          <tr>
-            <td>📍 Latitud</td>
-            <td><input type="number" id="latitude" step="any" placeholder="Ej: -34.6037" required></td>
-          </tr>
-          <tr>
-            <td>📍 Longitud</td>
-            <td><input type="number" id="longitude" step="any" placeholder="Ej: -58.3816" required></td>
-          </tr>
-          <tr>
-            <td>🌡️ Temperatura (°C)</td>
-            <td><input type="number" id="temperature" placeholder="Ej: 25" required></td>
-          </tr>
-          <tr>
-            <td>💧 Humedad (%)</td>
-            <td><input type="number" id="humidity" placeholder="Ej: 60" required></td>
-          </tr>
-          <tr>
-            <td>🌾 Fertilización (kg/ha)</td>
-            <td><input type="number" id="fertilization" placeholder="Ej: 100" required></td>
-          </tr>
-          <tr>
-            <td>🌱 Tipo de Cultivo</td>
-            <td><input type="text" id="cropType" placeholder="Ej: Maíz" required></td>
-          </tr>
-        </table>
-        <button class="btn" onclick="evaluateMetrics()">
-          <i class="fas fa-check"></i> Evaluar Condiciones
-        </button>
-      </div>
+  <div id="loading">Cargando datos...</div>
 
-      <!-- Sección de resultados -->
-      <div class="section">
-        <h2>Resultados</h2>
-        <div id="result" class="result"></div>
-        <canvas id="metricsChart"></canvas>
-        <button class="btn" id="exportReport">
-          <i class="fas fa-file-export"></i> Exportar Reporte
-        </button>
-        <h2>Ubicación del Cultivo</h2>
-        <div id="map"></div>
-      </div>
-    </div>
-
-    <h2>Ubicaciones Guardadas</h2>
-    <ul id="locationsList" class="locations-list"></ul>
+  <!-- Indicadores -->
+  <div id="indicators">
+    <div id="minValueIndicator" class="alert alert-info"></div>
+    <div id="maxValueIndicator" class="alert alert-info"></div>
+    <div id="averageValueIndicator" class="alert alert-info"></div>
+    <div id="performanceAlert" class="alert"></div>
   </div>
 
   <script>
-    // Valores óptimos
-    const OPTIMAL_TEMP_MIN = 15, OPTIMAL_TEMP_MAX = 30;
-    const OPTIMAL_HUM_MIN = 40, OPTIMAL_HUM_MAX = 70;
-    const OPTIMAL_FERT_MIN = 80, OPTIMAL_FERT_MAX = 120;
+    const excelFileInput = document.getElementById('excelFiles');
+    const ctx = document.getElementById('combinedChart').getContext('2d');
+    let combinedData = {
+      labels: [],
+      datasets: []
+    };
+    let chartInstance = null;
 
-    let chart;
-    let map = L.map('map').setView([19.4326, -99.1332], 5);
-    let savedLocations = JSON.parse(localStorage.getItem('locations')) || [];
+    excelFileInput.addEventListener('change', function (e) {
+      const files = e.target.files;
+      document.getElementById('loading').style.display = 'block'; // Mostrar mensaje de carga
 
-    // Inicializar mapa
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+      // Inicializamos las variables para los indicadores
+      let allDataValues = [];
 
-    // Cargar ubicaciones guardadas
-    function loadSavedLocations() {
-      document.getElementById('locationsList').innerHTML = '';
-      savedLocations.forEach((location, index) => {
-        addMarker(location.lat, location.lon, location.name, location.temp, location.hum, location.fert, location.color, location.crop);
-        addLocationToList(location, index);
-      });
-    }
+      Array.from(files).forEach((file, index) => {
+        const reader = new FileReader();
 
-    // Evaluar métricas ingresadas
-    function evaluateMetrics() {
-      const place = document.getElementById('placeName').value.trim();
-      const lat = parseFloat(document.getElementById('latitude').value);
-      const lon = parseFloat(document.getElementById('longitude').value);
-      const temp = parseFloat(document.getElementById('temperature').value);
-      const hum = parseFloat(document.getElementById('humidity').value);
-      const fert = parseFloat(document.getElementById('fertilization').value);
-      const crop = document.getElementById('cropType').value.trim();
+        reader.onload = function(event) {
+          const data = new Uint8Array(event.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Asumiendo que solo tienes una hoja de trabajo, toma la primera
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-      if (!place || isNaN(lat) || isNaN(lon) || isNaN(temp) || isNaN(hum) || isNaN(fert) || !crop) {
-        Swal.fire({
-          title: 'Error',
-          icon: 'error',
-          html: '<i class="fas fa-exclamation-triangle" style="font-size:2em;color:red"></i><br>Por favor, complete todos los campos correctamente.',
-          confirmButtonText: 'OK'
-        });
-        return;
-      }
+          // Convertir la hoja de trabajo en un JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      // Determinar color del marcador según la temperatura (ejemplo)
-      const color = (temp > 30) ? 'red' : (temp < 10) ? 'blue' : 'green';
+          // Extraer las etiquetas y valores
+          const labels = jsonData[0].slice(1);
+          const dataValues = jsonData.slice(1).map(row => row.slice(1));
 
-      // Guardar ubicación y actualizar visualización
-      saveLocation(lat, lon, place, temp, hum, fert, color, crop);
-      showChart(place, temp, hum, fert);
-      addMarker(lat, lon, place, temp, hum, fert, color, crop);
-      addLocationToList({ name: place, temp, hum, fert, crop, lat, lon }, savedLocations.length - 1);
-      evaluateCurrentCultivation(place, temp, hum, fert);
-      clearForm();
-    }
+          // Guardar todos los valores para análisis posterior
+          allDataValues = allDataValues.concat(...dataValues[0]);
 
-    // Genera feedback detallado de la evaluación
-    function getEvaluationFeedback(name, temp, hum, fert) {
-      let recommendations = "";
-      let isOptimal = true;
-      if (temp < OPTIMAL_TEMP_MIN) {
-        recommendations += `<br><b>Temperatura baja:</b> Aumente ${OPTIMAL_TEMP_MIN - temp}°C.`;
-        isOptimal = false;
-      } else if (temp > OPTIMAL_TEMP_MAX) {
-        recommendations += `<br><b>Temperatura alta:</b> Reduzca ${temp - OPTIMAL_TEMP_MAX}°C.`;
-        isOptimal = false;
-      }
-      if (hum < OPTIMAL_HUM_MIN) {
-        recommendations += `<br><b>Humedad baja:</b> Aumente ${OPTIMAL_HUM_MIN - hum}%.`;
-        isOptimal = false;
-      } else if (hum > OPTIMAL_HUM_MAX) {
-        recommendations += `<br><b>Humedad alta:</b> Reduzca ${hum - OPTIMAL_HUM_MAX}%.`;
-        isOptimal = false;
-      }
-      if (fert < OPTIMAL_FERT_MIN) {
-        recommendations += `<br><b>Fertilización baja:</b> Aumente ${OPTIMAL_FERT_MIN - fert} kg/ha.`;
-        isOptimal = false;
-      } else if (fert > OPTIMAL_FERT_MAX) {
-        recommendations += `<br><b>Fertilización alta:</b> Reduzca ${fert - OPTIMAL_FERT_MAX} kg/ha.`;
-        isOptimal = false;
-      }
-      return { isOptimal, recommendations };
-    }
-
-    // Evalúa el cultivo actual
-    function evaluateCurrentCultivation(name, temp, hum, fert) {
-      const feedback = getEvaluationFeedback(name, temp, hum, fert);
-      if (feedback.isOptimal) {
-        Swal.fire({
-          title: '¡Excelente!',
-          icon: 'success',
-          html: `<i class="fas fa-check-circle" style="font-size:2em;color:green"></i><br>
-                 Cultivo "${name}" en óptimo estado.<br>Mantenga las condiciones actuales.`,
-          timer: 3000,
-          showConfirmButton: false
-        });
-      } else {
-        Swal.fire({
-          title: 'Condiciones no óptimas',
-          icon: 'warning',
-          html: `<i class="fas fa-exclamation-triangle" style="font-size:2em;color:orange"></i><br>
-                 Cultivo "${name}" no se encuentra en condiciones óptimas.${feedback.recommendations}`,
-          timer: 4000,
-          showConfirmButton: false
-        });
-      }
-    }
-
-    // Evaluar ubicación guardada
-    function evaluateSavedLocation(index) {
-      const location = savedLocations[index];
-      if (!location) return;
-      const { name, temp, hum, fert, lat, lon } = location;
-      const feedback = getEvaluationFeedback(name, temp, hum, fert);
-      if (feedback.isOptimal) {
-        Swal.fire({
-          title: '¡Excelente!',
-          icon: 'success',
-          html: `<i class="fas fa-check-circle" style="font-size:2em;color:green"></i><br>
-                 Cultivo "${name}" en óptimo estado.`,
-          timer: 3000,
-          showConfirmButton: false
-        });
-      } else {
-        Swal.fire({
-          title: 'Condiciones no óptimas',
-          icon: 'warning',
-          html: `<i class="fas fa-exclamation-triangle" style="font-size:2em;color:orange"></i><br>
-                 Cultivo "${name}" no se encuentra en condiciones óptimas.${feedback.recommendations}`,
-          timer: 4000,
-          showConfirmButton: false
-        });
-      }
-      showChart(name, temp, hum, fert);
-      map.setView([lat, lon], 8);
-    }
-
-    // Mostrar gráfico interactivo
-    function showChart(name, temp, hum, fert) {
-      const ctx = document.getElementById('metricsChart').getContext('2d');
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Temperatura', 'Humedad', 'Fertilización'],
-          datasets: [{
-            label: name,
-            data: [temp, hum, fert],
-            backgroundColor: ['#FF6347', '#4682B4', '#32CD32'],
-            borderColor: ['#FF4500', '#1E90FF', '#228B22'],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            zoom: {
-              pan: { enabled: true, mode: 'x' },
-              zoom: { enabled: true, mode: 'x' }
-            }
-          },
-          onClick: (evt, activeEls) => {
-            if (activeEls.length > 0) {
-              const datasetIndex = activeEls[0].datasetIndex;
-              const index = activeEls[0].index;
-              const label = chart.data.labels[index];
-              const value = chart.data.datasets[datasetIndex].data[index];
-              Swal.fire({
-                title: label,
-                text: `Valor actual: ${value}`,
-                icon: 'info'
-              });
-            }
-          },
-          scales: {
-            y: { beginAtZero: true }
+          // Actualizar los labels combinados si es necesario
+          if (combinedData.labels.length === 0) {
+            combinedData.labels = labels;
           }
-        }
-      });
-    }
 
-    // Añadir marcador en el mapa
-    function addMarker(lat, lon, name, temp, hum, fert, color, crop) {
-      L.marker([lat, lon]).addTo(map)
-        .bindPopup(`<strong>${name}</strong><br>
-                    Tipo de cultivo: ${crop}<br>
-                    Temp: ${temp}°C<br>
-                    Humedad: ${hum}%<br>
-                    Fertilización: ${fert} kg/ha`);
-    }
-
-    // Guardar ubicación en localStorage
-    function saveLocation(lat, lon, name, temp, hum, fert, color, crop) {
-      const location = { lat, lon, name, temp, hum, fert, color, crop };
-      savedLocations.push(location);
-      localStorage.setItem('locations', JSON.stringify(savedLocations));
-    }
-
-    // Añadir ubicación a la lista
-    function addLocationToList(location, index) {
-      const list = document.getElementById('locationsList');
-      const li = document.createElement('li');
-      li.innerHTML = `${location.name} (${location.crop || 'Cultivo'}) - Temp: ${location.temp}°C, Hum: ${location.hum}%, Fert: ${location.fert} kg/ha`;
-
-      const evalButton = document.createElement('button');
-      evalButton.className = 'evaluate';
-      evalButton.innerHTML = '<i class="fas fa-eye"></i> Evaluar';
-      evalButton.onclick = () => evaluateSavedLocation(index);
-      li.appendChild(evalButton);
-
-      const deleteButton = document.createElement('button');
-      deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar';
-      deleteButton.onclick = () => confirmDelete(index);
-      li.appendChild(deleteButton);
-
-      list.appendChild(li);
-    }
-
-    // Confirmar eliminación
-    function confirmDelete(index) {
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: 'La ubicación se eliminará permanentemente.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          deleteLocation(index);
-          Swal.fire({
-            title: 'Eliminado',
-            text: 'La ubicación ha sido eliminada.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
+          // Añadir los datos al conjunto de datasets
+          combinedData.datasets.push({
+            label: `Dataset ${index + 1}`,
+            data: dataValues[0],  // Se asume que cada archivo tiene un solo conjunto de datos
+            fill: false,
+            borderColor: `hsl(${Math.random() * 360}, 100%, 50%)`,
+            tension: 0.1
           });
-        }
+
+          // Crear o actualizar el gráfico
+          if (chartInstance) {
+            chartInstance.update();
+          } else {
+            chartInstance = new Chart(ctx, {
+              type: 'line',
+              data: combinedData,
+              options: {
+                responsive: true,
+                scales: {
+                  x: {
+                    title: {
+                      display: true,
+                      text: 'Categorías'
+                    }
+                  },
+                  y: {
+                    title: {
+                      display: true,
+                      text: 'Valor'
+                    }
+                  }
+                }
+              }
+            });
+          }
+
+          // Calcular el valor mínimo, máximo y promedio de los datos
+          const minValue = Math.min(...allDataValues);
+          const maxValue = Math.max(...allDataValues);
+          const averageValue = allDataValues.reduce((sum, value) => sum + value, 0) / allDataValues.length;
+
+          // Actualizar los indicadores
+          document.getElementById('minValueIndicator').textContent = `Valor mínimo: ${minValue}`;
+          document.getElementById('maxValueIndicator').textContent = `Valor máximo: ${maxValue}`;
+          document.getElementById('averageValueIndicator').textContent = `Valor promedio: ${averageValue.toFixed(2)}`;
+
+          // Determinar el rendimiento del cultivo (por ejemplo, si el valor promedio es muy bajo o alto)
+          let performanceAlertMessage = '';
+          let performanceClass = 'alert-info';
+          if (averageValue < 20) {
+            performanceAlertMessage = 'Advertencia: El rendimiento del cultivo es bajo. Se recomienda revisar las condiciones del terreno.';
+            performanceClass = 'alert-warning';
+          } else if (averageValue > 80) {
+            performanceAlertMessage = '¡Excelente! El rendimiento del cultivo es óptimo.';
+            performanceClass = 'alert-success';
+          } else {
+            performanceAlertMessage = 'El rendimiento del cultivo es promedio. Mantén las condiciones de cultivo bajo control.';
+            performanceClass = 'alert-info';
+          }
+
+          document.getElementById('performanceAlert').textContent = performanceAlertMessage;
+          document.getElementById('performanceAlert').className = `alert ${performanceClass}`;
+        };
+
+        // Leer el archivo Excel
+        reader.readAsArrayBuffer(file);
       });
-    }
 
-    // Eliminar ubicación y actualizar lista
-    function deleteLocation(index) {
-      savedLocations.splice(index, 1);
-      localStorage.setItem('locations', JSON.stringify(savedLocations));
-      loadSavedLocations();
-    }
-
-    // Limpiar formulario
-    function clearForm() {
-      document.getElementById('placeName').value = "";
-      document.getElementById('latitude').value = "";
-      document.getElementById('longitude').value = "";
-      document.getElementById('temperature').value = "";
-      document.getElementById('humidity').value = "";
-      document.getElementById('fertilization').value = "";
-      document.getElementById('cropType').value = "";
-    }
-
-    // Exportar reporte a CSV (usando Blob para mejor compatibilidad)
-    function exportReport() {
-      if (!savedLocations.length) {
-        Swal.fire({
-          title: 'No hay datos',
-          text: 'No hay ubicaciones guardadas para exportar.',
-          icon: 'info'
-        });
-        return;
-      }
-      const currentDate = new Date().toLocaleString();
-      // Incluir BOM para compatibilidad con Excel
-      let csvContent = "\ufeff";
-      csvContent += `"Reporte de Cultivos - Fecha: ${currentDate}"\n`;
-      csvContent += "Nombre,Tipo de Cultivo,Latitud,Longitud,Temperatura,Humedad,Fertilización\n";
-      savedLocations.forEach(loc => {
-        csvContent += `"${loc.name}","${loc.crop}",${loc.lat},${loc.lon},${loc.temp},${loc.hum},${loc.fert}\n`;
-      });
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `reporte_cultivos_${Date.now()}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      Swal.fire({
-        title: 'Reporte exportado',
-        text: 'El reporte se ha exportado correctamente.',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false
-      });
-    }
-
-    // Eventos para botones de la barra superior
-    document.getElementById('exportReport').addEventListener('click', exportReport);
-    document.getElementById('toggleMode').addEventListener('click', () => {
-      document.body.classList.toggle('night-mode');
-      document.querySelector('.container').classList.toggle('night-mode');
-      const isNightMode = document.body.classList.contains('night-mode');
-      const toggleBtn = document.getElementById('toggleMode');
-      if (isNightMode) {
-        toggleBtn.innerHTML = '<i class="fas fa-sun"></i> Modo Día';
-      } else {
-        toggleBtn.innerHTML = '<i class="fas fa-moon"></i> Modo Noche';
-      }
+      // Ocultar el mensaje de carga después de procesar
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+      }, 1000); // Espera 1 segundo antes de ocultarlo para dar tiempo a procesar
     });
-    document.getElementById('closeWindow').addEventListener('click', () => {
-      window.close();
-    });
-
-    // Cargar ubicaciones al iniciar
-    loadSavedLocations();
   </script>
 </body>
 </html>
