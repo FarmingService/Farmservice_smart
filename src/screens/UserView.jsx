@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from 'firebase/storage'; 
-import { FaFolder, FaFolderOpen, FaSearch, FaBars, FaChartBar, FaGlobe, FaRegLightbulb } from 'react-icons/fa';
+import { 
+  FaFolder, FaFolderOpen, FaSearch, FaBars, FaChartBar, FaMap, FaFileAlt, FaCog, FaSignOutAlt 
+} from 'react-icons/fa';
 import firebaseApp from '../firebase/credenciales';
 import IniciarSesion from '../pages/IniciarSesion';
 import './UserView.css';
@@ -21,6 +23,7 @@ const UserView = () => {
   const [loadingFolder, setLoadingFolder] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
 
   const foldersRef = useRef([]);
 
@@ -143,44 +146,52 @@ const UserView = () => {
 
   return (
     <div className="user-view-container">
+      {/* Sidebar */}
       <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <button className="toggle-sidebar" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
           <FaBars />
         </button>
-        {/* Contenido de la barra lateral */}
         <div className="sidebar-content">
           <h2>Bienvenido, {user.displayName || user.email}!</h2>
-          
 
-          {/* Nuevas opciones en la barra lateral */}
-          <ul className="sidebar-options">
-            <li>
-
-            <button className="sidebar-option">
-                <FaGlobe /> Geoportal
-              </button>
-              
-              <button className="sidebar-option">
-                <FaChartBar /> Métricas
-              </button>
-            </li>
-            <li>
-              <button className="sidebar-option">
-                <FaRegLightbulb /> Pronostico
-              </button>
-            </li>
-            <li>
-              
-              
-              <button onClick={handleLogout} className="logout-btn">
-            Cerrar sesión
-          </button>
-            </li>
-          </ul>
+          <div className="sidebar-menu">
+            <button 
+              className={activeSection === "geoportal" ? "active" : ""}
+              onClick={() => window.open('prototipe/maps.html', '_blank')}
+            >
+              <FaMap /> <span>Geoportal</span>
+            </button>
+            <button 
+              className={activeSection === "metricas" ? "active" : ""}
+              onClick={() => window.open("../Metricas.html", '_blank')}
+            >
+              <FaChartBar /> <span>Métricas</span>
+            </button>
+            <button 
+              className={activeSection === "reportes" ? "active" : ""}
+              onClick={() => window.open("../Reportes.html", "_blank")}
+            >
+              <FaFileAlt /> <span>Reportes</span>
+            </button>
+            <button 
+              className={activeSection === "configuracion" ? "active" : ""}
+              onClick={() => setActiveSection("configuracion")}
+            >
+              <FaCog /> <span>Configuración</span>
+            </button>
+            <button 
+              className="logout-btn" 
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt /> <span>Cerrar sesión</span>
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Main Content */}
       <div className={`main-content ${isSidebarOpen ? 'shifted' : ''}`}>
+        {/* Información del Perfil */}
         <div className="profile-section">
           <h2>Información del Perfil</h2>
           {user.photoURL ? (
@@ -197,6 +208,7 @@ const UserView = () => {
           </button>
         </div>
 
+        {/* Carpeta y Archivos */}
         <div className="folders-section">
           <h2>Mis Carpetas</h2>
           <div className="search-bar">
