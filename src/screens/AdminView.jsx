@@ -177,7 +177,7 @@ const AdminView = () => {
         <div className="sidebar-menu">
           <button 
             className={activeSection === "geoportal" ? "active" : ""}
-            onClick={() => window.open('../Geoportal.html', '_blank')} // seccion abrir geoportal
+            onClick={() => window.open('prototipe/maps.html', '_blank')} // seccion abrir geoportal
           >
             <FaMap /> <span>Geoportal</span>
           </button>

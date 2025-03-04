@@ -150,26 +150,31 @@ const UserView = () => {
         {/* Contenido de la barra lateral */}
         <div className="sidebar-content">
           <h2>Bienvenido, {user.displayName || user.email}!</h2>
-          <button onClick={handleLogout} className="logout-btn">
-            Cerrar sesión
-          </button>
+          
 
           {/* Nuevas opciones en la barra lateral */}
           <ul className="sidebar-options">
             <li>
+
+            <button className="sidebar-option">
+                <FaGlobe /> Geoportal
+              </button>
+              
               <button className="sidebar-option">
                 <FaChartBar /> Métricas
               </button>
             </li>
             <li>
               <button className="sidebar-option">
-                <FaRegLightbulb /> Predicción
+                <FaRegLightbulb /> Pronostico
               </button>
             </li>
             <li>
-              <button className="sidebar-option">
-                <FaGlobe /> Geoportal
-              </button>
+              
+              
+              <button onClick={handleLogout} className="logout-btn">
+            Cerrar sesión
+          </button>
             </li>
           </ul>
         </div>
