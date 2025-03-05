@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Evaluación de Resultados de Cultivo</title>
+  <title>Metricas del Cultivo</title>
 
   <!-- Cargar Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -111,58 +111,56 @@
 
           // Crear o actualizar el gráfico
           if (chartInstance) {
-            chartInstance.data.labels = groupedLabels;
-            chartInstance.data.datasets = datasets;
-            chartInstance.update();
-          } else {
-            chartInstance = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: groupedLabels,
-                datasets: datasets,
-              },
-              options: {
-                responsive: true,
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Días',
-                    },
-                    ticks: {
-                      autoSkip: true,
-                      maxTicksLimit: 10, // Reducir la cantidad de ticks
-                      maxRotation: 0, // Evitar la rotación de las etiquetas
-                      minRotation: 0,
-                    },
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Cantidad de Frutas',
-                    },
-                    min: 0, // Rango mínimo
-                    max: Math.floor(Math.max(...groupQ1, ...groupQ2, ...groupQ3, ...groupQ4)) + 5, // Ajuste dinámico del máximo (entero)
-                    ticks: {
-                      stepSize: 5, // Saltos de 5 en 5
-                    },
-                  },
-                },
-                plugins: {
-                  legend: {
-                    position: 'top',
-                  },
-                  tooltip: {
-                    callbacks: {
-                      label: function(tooltipItem) {
-                        return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                      },
-                    },
-                  },
-                },
-              },
-            });
+            chartInstance.destroy(); // Destruir la gráfica anterior
           }
+
+          chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: groupedLabels,
+              datasets: datasets,
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Días',
+                  },
+                  ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 10, // Reducir la cantidad de ticks
+                    maxRotation: 0, // Evitar la rotación de las etiquetas
+                    minRotation: 0,
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Cantidad de Frutas',
+                  },
+                  min: 0, // Rango mínimo
+                  max: Math.floor(Math.max(...groupQ1, ...groupQ2, ...groupQ3, ...groupQ4)) + 5, // Ajuste dinámico del máximo (entero)
+                  ticks: {
+                    stepSize: 5, // Saltos de 5 en 5
+                  },
+                },
+              },
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(tooltipItem) {
+                      return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                    },
+                  },
+                },
+              },
+            },
+          });
 
           document.getElementById('loading').style.display = 'none'; // Ocultar mensaje de carga
         };
