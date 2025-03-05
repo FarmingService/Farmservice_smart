@@ -10,6 +10,12 @@
   --text-color: #fff;
   --transition-speed: 0.3s;
 }
+nav .nav-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
 
 .navbar {
   background: var(--navbar-bg);
