@@ -165,7 +165,7 @@ const UserView = () => {
               className={activeSection === "metricas" ? "active" : ""}
               onClick={() => window.open("../Metricas.html", '_blank')}
             >
-              <FaChartBar /> <span>Métricas</span>
+              <FaChartBar /> <span>Predicción</span>
             </button>
             <button 
               className={activeSection === "reportes" ? "active" : ""}
