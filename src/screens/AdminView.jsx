@@ -114,20 +114,22 @@ const AdminView = () => {
         isFolder: true
       }));
       
-      // Procesar archivos
-      const filePromises = result.items.map(async (itemRef) => {
-        const metadata = await getMetadata(itemRef);
-        const url = await getDownloadURL(itemRef);
-        return {
-          name: itemRef.name,
-          path: itemRef.fullPath,
-          url,
-          size: metadata.size,
-          type: metadata.contentType,
-          isFolder: false,
-          updated: new Date(metadata.updated)
-        };
-      });
+      // Procesar archivos - Filtrar los .placeholder
+      const filePromises = result.items
+        .filter(item => !item.name.endsWith('.placeholder')) // Filtrar archivos placeholder
+        .map(async (itemRef) => {
+          const metadata = await getMetadata(itemRef);
+          const url = await getDownloadURL(itemRef);
+          return {
+            name: itemRef.name,
+            path: itemRef.fullPath,
+            url,
+            size: metadata.size,
+            type: metadata.contentType,
+            isFolder: false,
+            updated: new Date(metadata.updated)
+          };
+        });
       
       const fileArray = await Promise.all(filePromises);
       
@@ -136,12 +138,12 @@ const AdminView = () => {
     } catch (error) {
       console.error("Error al listar archivos y carpetas:", error);
     }
-  }, [currentPath]); // Ahora incluimos currentPath como dependencia
+  }, [currentPath]);
 
   // Listar archivos y carpetas cuando la ruta cambia
   useEffect(() => {
     listFilesAndFolders();
-  }, [listFilesAndFolders]); // Ahora incluimos correctamente listFilesAndFolders como dependencia
+  }, [listFilesAndFolders]);
 
   // Función para subir archivos
   const handleFileUpload = (e) => {
@@ -172,23 +174,21 @@ const AdminView = () => {
     });
   };
 
-  // Función para crear nueva carpeta
+  // Función modificada para crear nueva carpeta sin archivos placeholder
   const handleCreateFolder = () => {
     if (!newFolderName.trim()) return;
     
-    // En Firebase Storage no podemos crear carpetas vacías directamente
-    // Creamos un archivo placeholder en la ruta para simular una carpeta
-    const placeholderFile = new Blob([" "], { type: "text/plain" });
-    const newFolderPath = `${currentPath}${newFolderName}/.placeholder`;
-    const storageRef = ref(storage, newFolderPath);
+    // En lugar de crear un archivo placeholder, simplemente actualizamos el estado
+    // y esperamos a que se suba un archivo real a esta carpeta
+    const newFolder = {
+      name: newFolderName,
+      path: `${currentPath}${newFolderName}/`,
+      isFolder: true
+    };
     
-    uploadBytesResumable(storageRef, placeholderFile).then(() => {
-      setNewFolderName("");
-      setShowNewFolderInput(false);
-      listFilesAndFolders();
-    }).catch(error => {
-      console.error("Error al crear carpeta:", error);
-    });
+    setFolders(prevFolders => [...prevFolders, newFolder]);
+    setNewFolderName("");
+    setShowNewFolderInput(false);
   };
 
   // Función para eliminar archivo o carpeta
