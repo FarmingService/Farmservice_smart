@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metricas del Cultivo</title>
+  <title>Métricas del Cultivo</title>
 
   <!-- Cargar Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,23 +19,38 @@
       background-color: #f5f5f5;
       color: #333;
     }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
     h1 {
       text-align: center;
       font-size: 2.5rem;
       color: #2c3e50;
       margin-bottom: 30px;
     }
-    #chartContainer {
-      width: 80%;
-      margin: 0 auto;
+    
+    .card {
       background-color: #fff;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       padding: 20px;
+      margin-bottom: 20px;
     }
+    
+    #chartContainer {
+      width: auto;
+    }
+    
+    .file-upload-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
     input[type="file"] {
-      display: block;
-      margin: 0 auto 20px auto;
+      display: inline-block;
       padding: 10px;
       border: 2px solid #3498db;
       border-radius: 5px;
@@ -43,134 +58,553 @@
       cursor: pointer;
       transition: all 0.3s ease;
     }
+    
     input[type="file"]:hover {
       border-color: #2980b9;
       background-color: #dfe6e9;
     }
+    
+    .control-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .control-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    select, button {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+    
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #2980b9;
+    }
+    
     #loading {
       display: none;
       text-align: center;
       font-size: 1.2rem;
       color: #3498db;
+      margin: 20px 0;
+    }
+    
+    #summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .stat-card {
+      flex: 1;
+      min-width: 200px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .stat-label {
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    /* Colores personalizados para cada trimestre */
+    .q1-color { color: #e74c3c; }
+    .q2-color { color: #2ecc71; }
+    .q3-color { color: #3498db; }
+    .q4-color { color: #f39c12; }
+    
+    /* Estilos para tabla de datos */
+    .data-table-container {
+      margin-top: 30px;
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+    @media (max-width: 768px) {
+      .control-group {
+        flex: 100%;
+      }
+      
+      .stat-card {
+        flex: 100%;
+      }
     }
   </style>
 </head>
 <body>
-
-  <h1>Evaluación de Resultados de Cultivo</h1>
-        <!-- Imagen de estatdistica del cultivo -->
-        <div style="text-align: center; margin-top: 10px;">
-          <img src="/images/metrics.jpg" alt="Estado del Cultivo" style="max-width: 100%; height: auto; border-radius: 5px;">
+  <div class="container">
+    <h1>Evaluación de Resultados de Cultivo</h1>
+    
+    <!-- Imagen de estadística del cultivo -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="/images/metrics.jpg" alt="Estado del Cultivo" style="max-width: 100%; height: auto; border-radius: 5px;">
+    </div>
+    
+    <!-- Formulario para cargar archivos Excel -->
+    <div class="card file-upload-container">
+      <h3>Carga de Datos</h3>
+      <input type="file" id="excelFiles" accept=".xlsx,.xls" />
+      <p class="help-text">Selecciona uno o más archivos Excel con datos de cultivo</p>
+    </div>
+    
+    <div id="loading">Cargando datos...</div>
+    
+    <!-- Panel de control -->
+    <div class="card control-panel" id="controlPanel" style="display: none;">
+      <div class="control-group">
+        <label for="chartType">Tipo de Gráfico:</label>
+        <select id="chartType">
+          <option value="line">Línea</option>
+          <option value="bar">Barras</option>
+          <option value="radar">Radar</option>
+        </select>
       </div>
-  
-  <!-- Formulario para cargar archivos Excel -->
-  <input type="file" id="excelFiles" multiple />
-  
-  <div id="loading">Cargando datos...</div>
-
-  <div id="chartContainer">
-    <canvas id="combinedChart"></canvas>
+      
+      <div class="control-group">
+        <label for="dataGrouping">Agrupar datos:</label>
+        <select id="dataGrouping">
+          <option value="1">No agrupar</option>
+          <option value="5" selected>Cada 5 días</option>
+          <option value="10">Cada 10 días</option>
+          <option value="15">Cada 15 días</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label>Trimestres a mostrar:</label>
+        <div style="display: flex; gap: 10px;">
+          <label><input type="checkbox" id="showQ1" checked> Q1</label>
+          <label><input type="checkbox" id="showQ2" checked> Q2</label>
+          <label><input type="checkbox" id="showQ3" checked> Q3</label>
+          <label><input type="checkbox" id="showQ4" checked> Q4</label>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <button id="exportChartBtn">Exportar Gráfico</button>
+      </div>
+    </div>
+    
+    <!-- Resumen estadístico -->
+    <div id="summary" class="card" style="display: none;">
+      <div class="stat-card">
+        <div class="stat-label">Promedio Q1</div>
+        <div class="stat-value q1-color" id="avgQ1">0</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-label">Promedio Q2</div>
+        <div class="stat-value q2-color" id="avgQ2">0</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-label">Promedio Q3</div>
+        <div class="stat-value q3-color" id="avgQ3">0</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-label">Promedio Q4</div>
+        <div class="stat-value q4-color" id="avgQ4">0</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-label">Mejor Trimestre</div>
+        <div class="stat-value" id="bestQuarter">-</div>
+      </div>
+    </div>
+    
+    <!-- Contenedor del gráfico -->
+    <div class="card" id="chartContainer">
+      <canvas id="combinedChart" width="auto" height="auto" style="display: block; box-sizing: border-box; height: auto; width: 968px;"></canvas>
+    </div>
+    
+    <!-- Tabla de datos -->
+    <div class="card data-table-container" id="dataTableContainer" style="display: none;">
+      <h3>Tabla de Datos</h3>
+      <div style="overflow-x: auto;">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th>Q1 Frutas</th>
+              <th>Q2 Frutas</th>
+              <th>Q3 Frutas</th>
+              <th>Q4 Frutas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Datos dinámicos aquí -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Variables globales
     const excelFileInput = document.getElementById('excelFiles');
     const ctx = document.getElementById('combinedChart').getContext('2d');
     let chartInstance = null;
-
-    excelFileInput.addEventListener('change', function (e) {
-      const files = e.target.files;
-      document.getElementById('loading').style.display = 'block'; // Mostrar mensaje de carga
-
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-
-        reader.onload = function(event) {
-          const data = new Uint8Array(event.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          
-          // Obtener los datos de la primera hoja
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-          // Extraer los días y los datos de cada trimestre
-          const labels = jsonData.slice(1).map(row => `Día ${row[0]}`); // Etiquetas (Días)
-          const q1Data = jsonData.slice(1).map(row => Math.floor(row[1])); // Q1_FRUITS (Entero)
-          const q2Data = jsonData.slice(1).map(row => Math.floor(row[2])); // Q2_FRUITS (Entero)
-          const q3Data = jsonData.slice(1).map(row => Math.floor(row[3])); // Q3_FRUITS (Entero)
-          const q4Data = jsonData.slice(1).map(row => Math.floor(row[4])); // Q4_FRUITS (Entero)
-
-          // Agrupar los datos para reducir la densidad de puntos
-          const groupedLabels = labels.filter((_, index) => index % 5 === 0); // Solo cada 5° día
-          const groupQ1 = q1Data.filter((_, index) => index % 5 === 0);
-          const groupQ2 = q2Data.filter((_, index) => index % 5 === 0);
-          const groupQ3 = q3Data.filter((_, index) => index % 5 === 0);
-          const groupQ4 = q4Data.filter((_, index) => index % 5 === 0);
-
-          const datasets = [
-            { label: 'Q1_FRUITS', data: groupQ1, borderColor: 'red', fill: false, pointRadius: 4 },
-            { label: 'Q2_FRUITS', data: groupQ2, borderColor: 'green', fill: false, pointRadius: 4 },
-            { label: 'Q3_FRUITS', data: groupQ3, borderColor: 'blue', fill: false, pointRadius: 4 },
-            { label: 'Q4_FRUITS', data: groupQ4, borderColor: 'orange', fill: false, pointRadius: 4 },
-          ];
-
-          // Crear o actualizar el gráfico
-          if (chartInstance) {
-            chartInstance.destroy(); // Destruir la gráfica anterior
+    let originalData = {
+      labels: [],
+      q1: [],
+      q2: [],
+      q3: [],
+      q4: []
+    };
+    
+    // Elementos del DOM
+    const controlPanel = document.getElementById('controlPanel');
+    const summarySection = document.getElementById('summary');
+    const dataTableContainer = document.getElementById('dataTableContainer');
+    const chartTypeSelect = document.getElementById('chartType');
+    const dataGroupingSelect = document.getElementById('dataGrouping');
+    const showQ1Checkbox = document.getElementById('showQ1');
+    const showQ2Checkbox = document.getElementById('showQ2');
+    const showQ3Checkbox = document.getElementById('showQ3');
+    const showQ4Checkbox = document.getElementById('showQ4');
+    const exportChartBtn = document.getElementById('exportChartBtn');
+    
+    // Configuración de colores
+    const chartColors = {
+      q1: {
+        borderColor: '#e74c3c',
+        backgroundColor: 'rgba(231, 76, 60, 0.2)'
+      },
+      q2: {
+        borderColor: '#2ecc71',
+        backgroundColor: 'rgba(46, 204, 113, 0.2)'
+      },
+      q3: {
+        borderColor: '#3498db',
+        backgroundColor: 'rgba(52, 152, 219, 0.2)'
+      },
+      q4: {
+        borderColor: '#f39c12',
+        backgroundColor: 'rgba(243, 156, 18, 0.2)'
+      }
+    };
+    
+    // Función para cargar y procesar los datos del Excel
+    excelFileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      document.getElementById('loading').style.display = 'block';
+      
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        
+        // Obtener los datos de la primera hoja
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        // Extraer los días y datos de cada trimestre
+        originalData.labels = jsonData.slice(1).map(row => `Día ${row[0]}`);
+        originalData.q1 = jsonData.slice(1).map(row => Math.floor(row[1] || 0));
+        originalData.q2 = jsonData.slice(1).map(row => Math.floor(row[2] || 0));
+        originalData.q3 = jsonData.slice(1).map(row => Math.floor(row[3] || 0));
+        originalData.q4 = jsonData.slice(1).map(row => Math.floor(row[4] || 0));
+        
+        // Mostrar panel de control y resumen
+        controlPanel.style.display = 'flex';
+        summarySection.style.display = 'flex';
+        dataTableContainer.style.display = 'block';
+        
+        // Actualizar la tabla de datos
+        updateDataTable(originalData);
+        
+        // Actualizar estadísticas
+        updateStatistics(originalData);
+        
+        // Crear el gráfico
+        updateChart();
+        
+        document.getElementById('loading').style.display = 'none';
+      };
+      
+      reader.readAsArrayBuffer(file);
+    });
+    
+    // Función para actualizar la tabla de datos
+    function updateDataTable(data) {
+      const tableBody = document.querySelector('#dataTable tbody');
+      tableBody.innerHTML = '';
+      
+      // Mostrar los primeros 20 registros para no sobrecargar la página
+      const maxRows = Math.min(data.labels.length, 6);
+      
+      for (let i = 0; i < maxRows; i++) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${data.labels[i]}</td>
+          <td>${data.q1[i]}</td>
+          <td>${data.q2[i]}</td>
+          <td>${data.q3[i]}</td>
+          <td>${data.q4[i]}</td>
+        `;
+        tableBody.appendChild(row);
+      }
+      
+      // Agregar nota si hay más datos
+      if (data.labels.length > 6) {
+        const noteRow = document.createElement('tr');
+        noteRow.innerHTML = `<td colspan="5">Mostrando 20 de ${data.labels.length} registros</td>`;
+        tableBody.appendChild(noteRow);
+      }
+    }
+    
+    // Función para actualizar estadísticas
+    function updateStatistics(data) {
+      // Calcular promedios
+      const avgQ1 = data.q1.reduce((sum, val) => sum + val, 0) / data.q1.length;
+      const avgQ2 = data.q2.reduce((sum, val) => sum + val, 0) / data.q2.length;
+      const avgQ3 = data.q3.reduce((sum, val) => sum + val, 0) / data.q3.length;
+      const avgQ4 = data.q4.reduce((sum, val) => sum + val, 0) / data.q4.length;
+      
+      // Actualizar valores en el DOM
+      document.getElementById('avgQ1').textContent = avgQ1.toFixed(1);
+      document.getElementById('avgQ2').textContent = avgQ2.toFixed(1);
+      document.getElementById('avgQ3').textContent = avgQ3.toFixed(1);
+      document.getElementById('avgQ4').textContent = avgQ4.toFixed(1);
+      
+      // Determinar el mejor trimestre
+      const averages = [avgQ1, avgQ2, avgQ3, avgQ4];
+      const maxAvg = Math.max(...averages);
+      const bestQuarterIndex = averages.indexOf(maxAvg);
+      const bestQuarterElement = document.getElementById('bestQuarter');
+      
+      bestQuarterElement.textContent = `Q${bestQuarterIndex + 1}`;
+      bestQuarterElement.className = ''; // Resetear clases
+      bestQuarterElement.classList.add('stat-value', `q${bestQuarterIndex + 1}-color`);
+    }
+    
+    // Función para agrupar datos según la selección
+    function groupData(data, groupSize) {
+      if (groupSize <= 1) return data;
+      
+      const result = {
+        labels: [],
+        q1: [],
+        q2: [],
+        q3: [],
+        q4: []
+      };
+      
+      for (let i = 0; i < data.labels.length; i += groupSize) {
+        result.labels.push(data.labels[i]);
+        result.q1.push(data.q1[i]);
+        result.q2.push(data.q2[i]);
+        result.q3.push(data.q3[i]);
+        result.q4.push(data.q4[i]);
+      }
+      
+      return result;
+    }
+    
+    // Función para actualizar el gráfico
+    function updateChart() {
+      // Obtener valores actuales
+      const chartType = chartTypeSelect.value;
+      const groupSize = parseInt(dataGroupingSelect.value);
+      const showQ1 = showQ1Checkbox.checked;
+      const showQ2 = showQ2Checkbox.checked;
+      const showQ3 = showQ3Checkbox.checked;
+      const showQ4 = showQ4Checkbox.checked;
+      
+      // Agrupar datos según la selección
+      const groupedData = groupData(originalData, groupSize);
+      
+      // Preparar datasets
+      const datasets = [];
+      
+      if (showQ1) {
+        datasets.push({
+          label: 'Q1 Frutas',
+          data: groupedData.q1,
+          borderColor: chartColors.q1.borderColor,
+          backgroundColor: chartColors.q1.backgroundColor,
+          fill: chartType === 'radar',
+          pointRadius: 4,
+          tension: 0.1
+        });
+      }
+      
+      if (showQ2) {
+        datasets.push({
+          label: 'Q2 Frutas',
+          data: groupedData.q2,
+          borderColor: chartColors.q2.borderColor,
+          backgroundColor: chartColors.q2.backgroundColor,
+          fill: chartType === 'radar',
+          pointRadius: 4,
+          tension: 0.1
+        });
+      }
+      
+      if (showQ3) {
+        datasets.push({
+          label: 'Q3 Frutas',
+          data: groupedData.q3,
+          borderColor: chartColors.q3.borderColor,
+          backgroundColor: chartColors.q3.backgroundColor,
+          fill: chartType === 'radar',
+          pointRadius: 4,
+          tension: 0.1
+        });
+      }
+      
+      if (showQ4) {
+        datasets.push({
+          label: 'Q4 Frutas',
+          data: groupedData.q4,
+          borderColor: chartColors.q4.borderColor,
+          backgroundColor: chartColors.q4.backgroundColor,
+          fill: chartType === 'radar',
+          pointRadius: 4,
+          tension: 0.1
+        });
+      }
+      
+      // Destruir gráfico existente si hay uno
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+      
+      // Crear nuevo gráfico
+      chartInstance = new Chart(ctx, {
+        type: chartType,
+        data: {
+          labels: groupedData.labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: chartType !== 'radar' ? {
+            x: {
+              title: {
+                display: true,
+                text: 'Días',
+                font: {
+                  weight: 'bold'
+                }
+              },
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 10,
+                maxRotation: 45,
+                minRotation: 0
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Cantidad de Frutas',
+                font: {
+                  weight: 'bold'
+                }
+              },
+              min: 0,
+              ticks: {
+                stepSize: 5
+              }
+            }
+          } : {},
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                usePointStyle: true,
+                padding: 20
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: function(tooltipItem) {
+                  return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
+                }
+              }
+            },
+            title: {
+              display: true,
+              text: 'Producción de Frutas por Trimestre',
+              font: {
+                size: 16
+              }
+            }
           }
-
-          chartInstance = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: groupedLabels,
-              datasets: datasets,
-            },
-            options: {
-              responsive: true,
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'Días',
-                  },
-                  ticks: {
-                    autoSkip: true,
-                    maxTicksLimit: 10, // Reducir la cantidad de ticks
-                    maxRotation: 0, // Evitar la rotación de las etiquetas
-                    minRotation: 0,
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Cantidad de Frutas',
-                  },
-                  min: 0, // Rango mínimo
-                  max: Math.floor(Math.max(...groupQ1, ...groupQ2, ...groupQ3, ...groupQ4)) + 5, // Ajuste dinámico del máximo (entero)
-                  ticks: {
-                    stepSize: 5, // Saltos de 5 en 5
-                  },
-                },
-              },
-              plugins: {
-                legend: {
-                  position: 'top',
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(tooltipItem) {
-                      return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          document.getElementById('loading').style.display = 'none'; // Ocultar mensaje de carga
-        };
-
-        reader.readAsArrayBuffer(file);
+        }
       });
+    }
+    
+    // Event listeners para controles
+    chartTypeSelect.addEventListener('change', updateChart);
+    dataGroupingSelect.addEventListener('change', updateChart);
+    showQ1Checkbox.addEventListener('change', updateChart);
+    showQ2Checkbox.addEventListener('change', updateChart);
+    showQ3Checkbox.addEventListener('change', updateChart);
+    showQ4Checkbox.addEventListener('change', updateChart);
+    
+    // Exportar gráfico como imagen
+    exportChartBtn.addEventListener('click', function() {
+      if (!chartInstance) return;
+      
+      const link = document.createElement('a');
+      link.download = 'grafico-cultivo.png';
+      link.href = chartInstance.toBase64Image();
+      link.click();
     });
   </script>
 </body>
