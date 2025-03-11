@@ -35,6 +35,7 @@ const App = () => {
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
           const userData = userDoc.data();
+          console.log("User Data:", userData); // Log de los datos del usuario
           if (userData.rol === "admin") {
             setIsAdmin(true);
           } else {
