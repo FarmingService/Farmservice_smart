@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
-import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from 'firebase/storage'; 
+import { getStorage, ref, getDownloadURL, listAll } from 'firebase/storage';
 import { 
-  FaFolder, FaFolderOpen, FaBars, FaChartBar, FaMap, 
-  FaFileAlt, FaCog, FaSignOutAlt, FaUser, FaUpload, FaTimesCircle,
+  FaFolder, FaBars, FaChartBar, FaMap, FaCog, FaSignOutAlt, FaUser, FaUpload, FaTimesCircle,
   FaArrowLeft, FaTimes
 } from 'react-icons/fa';
 import firebaseApp from '../firebase/credenciales';
@@ -19,18 +18,15 @@ const UserView = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [folders, setFolders] = useState([]);
-  const [folderContents, setFolderContents] = useState({});
-  const [expandedFolder, setExpandedFolder] = useState(null);
-  const [loadingFolder, setLoadingFolder] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState("archivos");
   const [showProfileOptions, setShowProfileOptions] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarMode, setSidebarMode] = useState('full'); // 'full', 'collapsed', or 'hidden'
+  const [files, setFiles] = useState([]);
+  const [folders, setFolders] = useState([]);
+  const [currentPath, setCurrentPath] = useState('reportes/');
 
-  const foldersRef = useRef([]);
   const fileInputRef = useRef(null);
   const sidebarRef = useRef(null);
   const profileOptionsRef = useRef(null);
@@ -92,12 +88,6 @@ const UserView = () => {
       .catch((error) => console.error('Error al cerrar sesión:', error));
   };
 
-  const handleSearch = (e) => setSearchTerm(e.target.value.toLowerCase());
-
-  const filteredFolders = folders.filter((folder) =>
-    folder.toLowerCase().includes(searchTerm)
-  );
-
   // Manejo de la foto de perfil
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
@@ -110,10 +100,8 @@ const UserView = () => {
   const handleUploadProfilePic = async () => {
     if (!profilePic) return alert('Selecciona una foto primero');
     setLoading(true);
-    const storageRef = ref(storage, `profile_pics/${user.uid}`);
     try {
-      await uploadBytes(storageRef, profilePic);
-      const downloadURL = await getDownloadURL(storageRef);
+      const downloadURL = URL.createObjectURL(profilePic);
       await updateProfile(user, { photoURL: downloadURL });
       setUser((prevUser) => ({ ...prevUser, photoURL: downloadURL }));
       setImagePreview(null);
@@ -127,58 +115,6 @@ const UserView = () => {
   const cancelImageSelection = () => {
     setImagePreview(user?.photoURL || null);
     setProfilePic(null);
-  };
-
-  // Obtener carpetas desde Firebase Storage
-  const fetchFolders = async () => {
-    try {
-      const folderRef = ref(storage, 'files');
-      const folderList = await listAll(folderRef);
-      const folderNames = folderList.prefixes.map((folder) => folder.name);
-
-      // Solo actualiza el estado si hay cambios
-      if (JSON.stringify(foldersRef.current) !== JSON.stringify(folderNames)) {
-        foldersRef.current = folderNames;
-        setFolders(folderNames);
-      }
-    } catch (error) {
-      console.error('Error al obtener carpetas:', error);
-    }
-  };
-
-  // Obtener archivos de una carpeta
-  const fetchFolderContents = async (folderName) => {
-    if (expandedFolder === folderName) {
-      setExpandedFolder(null);
-      return;
-    }
-
-    if (folderContents[folderName]) {
-      setExpandedFolder(folderName);
-      return;
-    }
-
-    setLoadingFolder(folderName);
-    const folderRef = ref(storage, `files/${folderName}`);
-    try {
-      const folderList = await listAll(folderRef);
-      const fileUrls = await Promise.all(
-        folderList.items.map(async (file) => {
-          const fileURL = await getDownloadURL(file);
-          return { name: file.name, url: fileURL };
-        })
-      );
-
-      setFolderContents((prev) => ({
-        ...prev,
-        [folderName]: fileUrls,
-      }));
-      setExpandedFolder(folderName);
-    } catch (error) {
-      console.error('Error al obtener archivos:', error);
-    } finally {
-      setLoadingFolder(null);
-    }
   };
 
   // Abrir diálogo de selección de archivos
@@ -195,6 +131,37 @@ const UserView = () => {
       setIsSidebarOpen(false);
     }
   };
+
+  // Cargar carpetas y archivos desde Firebase Storage
+  const loadFilesAndFolders = async (path) => {
+    const rootRef = ref(storage, path);
+    const folderList = await listAll(rootRef);
+    const folderNames = folderList.prefixes.map(folderRef => folderRef.name);
+    setFolders(folderNames);
+
+    const fileUrls = await Promise.all(folderList.items.map(item => getDownloadURL(item)));
+    setFiles(fileUrls);
+  };
+
+  // Navegar a una carpeta
+  const handleFolderClick = (folderName) => {
+    const newPath = `${currentPath}${folderName}/`;
+    setCurrentPath(newPath);
+    loadFilesAndFolders(newPath);
+  };
+
+  // Volver a la carpeta anterior
+  const handleBackClick = () => {
+    const newPath = currentPath.split('/').slice(0, -2).join('/') + '/';
+    setCurrentPath(newPath);
+    loadFilesAndFolders(newPath);
+  };
+
+  // Sondeo periódico para actualizar la lista de carpetas y archivos
+  useEffect(() => {
+    const intervalId = setInterval(() => loadFilesAndFolders(currentPath), 10000); // Actualizar cada 10 segundos
+    return () => clearInterval(intervalId);
+  }, [currentPath]);
 
   // Cerrar opciones de perfil y sidebar al hacer clic fuera
   useEffect(() => {
@@ -224,28 +191,22 @@ const UserView = () => {
     };
   }, [showProfileOptions, isMobile, isSidebarOpen]);
 
-  // Escuchar cambios en autenticación y carpetas en tiempo real
+  // Escuchar cambios en autenticación
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
         if (user.photoURL) setImagePreview(user.photoURL);
-        fetchFolders();
+        loadFilesAndFolders(currentPath);
       } else {
         setIsLoggedIn(false);
       }
     });
 
-    // Actualización de carpetas en tiempo real
-    const interval = setInterval(() => {
-      fetchFolders();
-    }, 3000);
-
     return () => {
       unsubscribeAuth();
-      clearInterval(interval);
     };
-  }, []);
+  }, [currentPath]);
 
   if (!isLoggedIn || !user) {
     return <IniciarSesion />;
@@ -417,62 +378,32 @@ const UserView = () => {
             {activeSection === "archivos" && "Mis Archivos"}
             {activeSection === "configuracion" && "Configuración"}
           </h2>
-          
-          {activeSection === "archivos" && (
-            <div className="search-bar">
-              <input
-                type="text"
-                placeholder="Buscar archivo..."
-                value={searchTerm}
-                onChange={handleSearch}
-              />
-            </div>
-          )}
         </div>
 
         {activeSection === "archivos" && (
           <div className="files-container">
-            {filteredFolders.length === 0 ? (
+            {currentPath !== 'reportes/' && (
+              <button onClick={handleBackClick}>
+                <FaArrowLeft /> Atrás
+              </button>
+            )}
+            {folders.length === 0 && files.length === 0 ? (
               <p className="no-files">No se encontraron carpetas o archivos.</p>
             ) : (
-              <div className="folder-grid">
-                {filteredFolders.map((folder, index) => (
-                  <div key={index} className="folder-card">
-                    <div 
-                      className="folder-header"
-                      onClick={() => fetchFolderContents(folder)}
-                    >
-                      <span className="folder-icon">
-                        {expandedFolder === folder ? <FaFolderOpen size={24} /> : <FaFolder size={24} />}
-                      </span>
-                      <span className="folder-name">{folder}</span>
-                    </div>
-                    
-                    {loadingFolder === folder && <p className="loading-text">Cargando...</p>}
-                    
-                    {expandedFolder === folder && folderContents[folder] && (
-                      <div className="file-grid">
-                        {folderContents[folder].length === 0 ? (
-                          <p>Esta carpeta está vacía</p>
-                        ) : (
-                          folderContents[folder].map((file, idx) => (
-                            <a 
-                              key={idx} 
-                              href={file.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="file-item"
-                            >
-                              <FaFileAlt />
-                              <span className="file-name">{file.name}</span>
-                            </a>
-                          ))
-                        )}
-                      </div>
-                    )}
-                  </div>
+              <ul>
+                {folders.map((folderName, index) => (
+                  <li key={index} onClick={() => handleFolderClick(folderName)}>
+                    <strong>{folderName}</strong>
+                  </li>
                 ))}
-              </div>
+                {files.map((fileUrl, index) => (
+                  <li key={index}>
+                    <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                      {fileUrl.split('/').pop()}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
         )}
