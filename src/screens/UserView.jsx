@@ -412,6 +412,10 @@ const UserView = () => {
           <div className="config-section">
             <h3>Configuración de la cuenta</h3>
             <p>Aquí podrás cambiar la configuración de tu cuenta en el futuro.</p>
+            
+
+
+
           </div>
         )}
       </div>
