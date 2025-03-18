@@ -19,7 +19,7 @@ const Home = () => {
       {/* Sección de bienvenida */}
       <section id="home" className="home-container">
         <div className="home-overlay">
-          <h1 className="home-title">Bienvenido a Smart Farming service mapeo</h1>
+          <h1 className="home-title">Bienvenido a Smart Farming</h1>
           <p className="home-description">La mejor experiencia digital para ti</p>
           <a href="#more-info" className="home-btn">Descubre Más</a>
         </div>

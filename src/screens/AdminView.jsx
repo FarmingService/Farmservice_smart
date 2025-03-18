@@ -18,27 +18,22 @@ import {
   deleteObject,
   getMetadata
 } from "firebase/storage";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import IniciarSesion from "../pages/IniciarSesion";
 import { 
   FaSignOutAlt, 
   FaTrashAlt,  
   FaUsers, 
-  FaMap,
-  FaFileAlt,  
   FaCheck, 
   FaTimes,
   FaUpload,
   FaFolder,
   FaFolderPlus,
   FaFile,
-  FaDownload
+  FaDownload,
+  FaChartBar,
+  FaMapMarkedAlt
 } from "react-icons/fa"; 
 import "./AdminView.css";
-
-// Configuración de Chart.js
-ChartJS.register(ArcElement, Tooltip, Legend);
 
 // Inicialización de Firebase Auth, Firestore y Storage
 const auth = getAuth(firebaseApp);
@@ -52,8 +47,6 @@ const AdminView = () => {
   const [userList, setUserList] = useState([]);
   const [showActive, setShowActive] = useState(true);
   
-  const [activeSection] = useState("dashboard");
-  const [showSidebar, setShowSidebar] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   
   // Estados para la gestión de reportes
@@ -66,6 +59,15 @@ const AdminView = () => {
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   
   const fileInputRef = useRef(null);
+
+  // Funciones para abrir ventanas externas
+  const openGeoportal = () => {
+    window.open('prototipe/maps.html', '_blank');
+  };
+
+  const openMetricas = () => {
+    window.open('./Metricas.html', '_blank');
+  };
 
   // Manejo del cierre de sesión
   const handleLogout = () => {
@@ -269,50 +271,6 @@ const AdminView = () => {
     }
   };
 
-  // Datos para el gráfico Pie de distribución de usuarios
-  const data = useMemo(() => ({
-    labels: ["Usuarios Activos", "Usuarios Inactivos"],
-    datasets: [
-      {
-        data: [activeUsers, totalUsers - activeUsers],
-        backgroundColor: ["#3498db", "#e74c3c"],
-        hoverBackgroundColor: ["#2980b9", "#c0392b"],
-        borderColor: "#fff",
-        borderWidth: 2,
-      },
-    ],
-  }), [activeUsers, totalUsers]);
-
-  // Opciones del gráfico
-  const options = useMemo(() => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { 
-        position: "bottom",
-        labels: {
-          font: {
-            size: 14,
-            family: "'Poppins', sans-serif"
-          }
-        }
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            const label = context.label || "";
-            const value = context.raw || 0;
-            return `${label}: ${value} (${((value / totalUsers) * 100).toFixed(2)}%)`;
-          },
-        },
-      },
-    },
-    animation: {
-      duration: 800,
-      easing: "easeOutBounce",
-    },
-  }), [totalUsers]);
-
   // Filtrar usuarios según estado (activo/inactivo) y término de búsqueda
   const filteredUsers = useMemo(() => {
     let filtered = userList;
@@ -332,11 +290,6 @@ const AdminView = () => {
     return filtered;
   }, [userList, showActive, searchTerm]);
 
-  // Alternar visibilidad de la barra lateral
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
-
   // Formatear tamaño de archivo
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -349,57 +302,34 @@ const AdminView = () => {
   if (!isLoggedIn) return <IniciarSesion />;
 
   return (
-    <div className={`admin-dashboard ${showSidebar ? 'sidebar-open' : 'sidebar-closed'}`}>
-      {/* Barra lateral */}
-      <div className="hamburger-menu" onClick={toggleSidebar}>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-      
-      <div className="sidebar">
-        <div className="logo">
-          <h2>Admin Panel</h2>
-        </div>
-        
-        <div className="sidebar-menu">
-          {/* Secciones del panel: Geoportal, Métricas, Reportes, Configuración */}
-          <button 
-            className={activeSection === "geoportal" ? "active" : ""}
-            onClick={() => window.open('prototipe/maps.html', '_blank')} // Sección Geoportal
-          >
-            <FaMap /> <span>Geoportal</span>
-          </button>
-       
-          <button 
-            className={activeSection === "reportes" ? "active" : ""}
-            onClick={() => window.open("../Metricas.html", "_blank")} // Redirige a la ruta de React
-          >
-            <FaFileAlt /> <span>Metricas</span>
-          </button>
-
-          {/* Cerrar sesión */}
+    <div className="admin-dashboard">
+      {/* Contenido principal */}
+      <div className="main-content">
+        <div className="header">
+          <h1>Dashboard de Administración</h1>
+          
+          {/* Nueva sección de pestañas */}
+          <div className="navigation-tabs">
+            <button 
+              className="tab-button"
+              onClick={openGeoportal}
+            >
+              <FaMapMarkedAlt /> Geoportal
+            </button>
+            <button 
+              className="tab-button"
+              onClick={openMetricas}
+            >
+              <FaChartBar /> Métricas
+            </button>
+          </div>
+         
           <button 
             className="logout-btn" 
             onClick={handleLogout}
           >
             <FaSignOutAlt /> <span>Cerrar sesión</span>
           </button>
-        </div>
-      </div>
-
-      {/* Contenido principal */}
-      <div className="main-content">
-        <div className="header">
-          <h1>Dashboard de Administración</h1>
-          <div className="search-bar">
-            <input 
-              type="text" 
-              placeholder="Buscar usuarios..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)} // Control de búsqueda
-            />
-          </div>
         </div>
 
         {/* Layout del Dashboard */}
@@ -426,20 +356,18 @@ const AdminView = () => {
           </div>
 
           <div className="dashboard-grid">
-            {/* Gráfico de distribución de usuarios */}
-            <div className="chart-container">
-              <div className="card-header">
-                <h3>Distribución de Usuarios</h3>
-              </div>
-              <div className="chart-wrapper">
-                <Pie data={data} options={options} /> {/* Gráfico Pie */}
-              </div>
-            </div>
-
             {/* Gestión de usuarios */}
             <div className="user-management">
               <div className="card-header">
                 <h3>Gestión de Usuarios</h3>
+                <div className="search-bar">
+            <input 
+              type="text" 
+              placeholder="Buscar usuarios..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)} // Control de búsqueda
+            />
+          </div>
                 <button onClick={() => setShowActive(!showActive)} className="filter-btn">
                   {showActive ? "Mostrar Todos" : "Mostrar Activos"}
                 </button>
