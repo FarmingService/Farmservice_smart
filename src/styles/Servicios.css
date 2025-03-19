@@ -78,10 +78,6 @@ VISUALIZACION VENTANA DE SERVICIOS
   line-height: 1.5;
 }
 
-.servicio-card:hover h3 {
-  color: #007bff;
-}
-
 /* Animaciones */
 @keyframes fadeInDown {
   from {

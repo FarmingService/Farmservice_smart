@@ -77,9 +77,6 @@ a {
   transition: color var(--transition-fast);
 }
 
-a:hover {
-  color: var(--primary-dark);
-}
 
 .visually-hidden {
   position: absolute;
