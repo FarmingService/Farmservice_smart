@@ -81,12 +81,10 @@ const Home = () => {
       {/* Sección de contacto */}
       <section id="contact" className="contact-section">
         <h2>Contacto</h2>
-        <form className="contact-form">
-          <input type="text" placeholder="Nombre" required />
-          <input type="email" placeholder="Correo electrónico" required />
-          <textarea placeholder="Tu mensaje" required></textarea>
-          <button type="submit">Enviar Mensaje</button>
-        </form>
+        <p>¿Tienes alguna pregunta o comentario? ¡Contáctanos!</p>
+        <div className="contact-image">
+            <img src="/images/fondo2.jpg" alt="Contáctanos" /> 
+          </div>
       </section>
     </div>
   );

@@ -228,34 +228,18 @@ body {
     padding-bottom: 20px;  /* Espacio adicional en la parte inferior */
   }
   
-  .contact-form input,
-  .contact-form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 4px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-  }
-  
-  .contact-form button {
-    background-color:  #0ab75e;  /* Color de fondo */
-    color: white;  /* Color del texto */
-    padding: 12px 30px;  /* Espaciado */
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    display: inline-block;  /* Asegura que el botón se vea como un bloque */
-    margin-top: 10px;  /* Espacio superior */
-  }
-  
-  .contact-form button:hover {
-    background-color: #11cb7771;  /* Color de fondo cuando se pasa el ratón */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);  /* Sombra más pronunciada en hover */
-  }
-  
+.contact-image{
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 auto; /* Centra la imagen */
+  margin-top: 20px; /* Añade espacio en la parte superior */
+}
+
+ 
   /* Ajuste del Footer */
   footer {
     position: relative;  /* Asegura que el footer no se superponga con el contenido */
