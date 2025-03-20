@@ -341,7 +341,11 @@ const UserView = () => {
             </button>
             <button 
               className={activeSection === "geoportal" ? "active" : ""}
-              onClick={() => window.open('prototipe/maps.html', '_blank')}
+             onClick={() => window.open('prototipe/maps.html', '_blank')}
+            
+
+              
+
               title="Geoportal"
             >
               <FaMap /> {sidebarMode === 'full' && <span>Geoportal</span>}
