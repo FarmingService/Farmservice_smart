@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getAuth, signOut, onAuthStateChanged, updateProfile } from 'firebase/auth';
+import { getAuth, signOut, onAuthStateChanged, updateProfile, updateEmail, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { getStorage, ref, getDownloadURL, listAll } from 'firebase/storage';
 import { 
   FaFolder, FaBars, FaChartBar, FaMap, FaCog, FaSignOutAlt, FaUser, FaUpload, FaTimesCircle,
-  FaArrowLeft, FaTimes
+  FaArrowLeft, FaTimes, FaSave, FaTrashAlt, FaLock
 } from 'react-icons/fa';
 import firebaseApp from '../firebase/credenciales';
 import IniciarSesion from '../pages/IniciarSesion';
@@ -26,6 +26,13 @@ const UserView = () => {
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
   const [currentPath, setCurrentPath] = useState('reportes/');
+
+  // Nuevos estados para configuración
+  const [displayName, setDisplayName] = useState('');
+  const [email, setEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [message, setMessage] = useState({ text: '', type: '' });
 
   const fileInputRef = useRef(null);
   const sidebarRef = useRef(null);
@@ -157,6 +164,70 @@ const UserView = () => {
     loadFilesAndFolders(newPath);
   };
 
+  // Actualizar información del perfil del usuario
+  const updateUserProfile = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage({ text: '', type: '' });
+    
+    try {
+      // Actualizar nombre de usuario
+      if (displayName !== user.displayName) {
+        await updateProfile(auth.currentUser, { displayName });
+        setUser((prevUser) => ({ ...prevUser, displayName }));
+      }
+      
+      // Actualizar correo electrónico (requiere reautenticación)
+      if (email !== user.email && currentPassword) {
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(auth.currentUser, credential);
+        await updateEmail(auth.currentUser, email);
+        setUser((prevUser) => ({ ...prevUser, email }));
+        setCurrentPassword('');
+      }
+      
+      setMessage({ text: 'Perfil actualizado con éxito', type: 'success' });
+    } catch (error) {
+      console.error('Error al actualizar perfil:', error);
+      setMessage({ 
+        text: error.code === 'auth/wrong-password' 
+          ? 'Contraseña incorrecta' 
+          : error.code === 'auth/requires-recent-login'
+          ? 'Es necesario volver a iniciar sesión para esta acción'
+          : 'Error al actualizar perfil: ' + error.message,
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Eliminar cuenta de usuario
+  const deleteUserAccount = async () => {
+    if (!currentPassword) {
+      return setMessage({ text: 'Debe ingresar su contraseña para eliminar la cuenta', type: 'error' });
+    }
+    
+    setLoading(true);
+    try {
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(auth.currentUser, credential);
+      await deleteUser(auth.currentUser);
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error);
+      setMessage({ 
+        text: error.code === 'auth/wrong-password' 
+          ? 'Contraseña incorrecta' 
+          : 'Error al eliminar cuenta: ' + error.message,
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   // Sondeo periódico para actualizar la lista de carpetas y archivos
   useEffect(() => {
     const intervalId = setInterval(() => loadFilesAndFolders(currentPath), 10000); // Actualizar cada 10 segundos
@@ -197,6 +268,8 @@ const UserView = () => {
       if (user) {
         setUser(user);
         if (user.photoURL) setImagePreview(user.photoURL);
+        setDisplayName(user.displayName || '');
+        setEmail(user.email || '');
         loadFilesAndFolders(currentPath);
       } else {
         setIsLoggedIn(false);
@@ -341,11 +414,7 @@ const UserView = () => {
             </button>
             <button 
               className={activeSection === "geoportal" ? "active" : ""}
-             onClick={() => window.open('prototipe/maps.html', '_blank')}
-            
-
-              
-
+              onClick={() => window.open('prototipe/maps.html', '_blank')}
               title="Geoportal"
             >
               <FaMap /> {sidebarMode === 'full' && <span>Geoportal</span>}
@@ -415,11 +484,108 @@ const UserView = () => {
         {activeSection === "configuracion" && (
           <div className="config-section">
             <h3>Configuración de la cuenta</h3>
-            <p>Aquí podrás cambiar la configuración de tu cuenta en el futuro.</p>
             
-
-
-
+            {message.text && (
+              <div className={`message ${message.type}`}>
+                {message.text}
+              </div>
+            )}
+            
+            <form onSubmit={updateUserProfile} className="profile-form">
+              <div className="form-group">
+                <label>Nombre de usuario</label>
+                <input 
+                  type="text" 
+                  value={displayName} 
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder="Nombre completo"
+                />
+              </div>
+              
+              <div className="form-group">
+                <label>Correo electrónico</label>
+                <input 
+                  type="email" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="correo@ejemplo.com"
+                />
+                {email !== user.email && (
+                  <p className="info-text">
+                    <FaLock /> Para cambiar el correo, es necesario verificar tu contraseña.
+                  </p>
+                )}
+              </div>
+              
+              {(email !== user.email) && (
+                <div className="form-group">
+                  <label>Contraseña actual</label>
+                  <input 
+                    type="password" 
+                    value={currentPassword} 
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Ingresa tu contraseña actual"
+                  />
+                </div>
+              )}
+              
+              <button 
+                type="submit" 
+                className="save-btn" 
+                disabled={loading || (displayName === user.displayName && email === user.email)}
+              >
+                <FaSave /> Guardar cambios
+              </button>
+            </form>
+            
+            <div className="account-danger-zone">
+              <h4>Zona de peligro</h4>
+              
+              {!showDeleteConfirm ? (
+                <button 
+                  className="delete-account-btn" 
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <FaTrashAlt /> Eliminar mi cuenta
+                </button>
+              ) : (
+                <div className="delete-confirmation">
+                  <p className="warning-text">
+                    Esta acción es irreversible. Todos tus datos serán eliminados permanentemente.
+                  </p>
+                  
+                  <div className="form-group">
+                    <label>Confirma tu contraseña para continuar</label>
+                    <input 
+                      type="password" 
+                      value={currentPassword} 
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Ingresa tu contraseña"
+                    />
+                  </div>
+                  
+                  <div className="delete-actions">
+                    <button 
+                      className="confirm-delete-btn" 
+                      onClick={deleteUserAccount}
+                      disabled={loading || !currentPassword}
+                    >
+                      <FaTrashAlt /> {loading ? 'Eliminando...' : 'Confirmar eliminación'}
+                    </button>
+                    
+                    <button 
+                      className="cancel-delete-btn" 
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setCurrentPassword('');
+                      }}
+                    >
+                      <FaTimesCircle /> Cancelar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

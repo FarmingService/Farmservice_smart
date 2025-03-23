@@ -1,10 +1,10 @@
-/* Enhanced CSS for UserView Component */
+/* Enhanced CSS for UserView Component - Updated Color Scheme */
 :root {
-  /* Core color palette - expanded with additional shades */
-  --primary-color: #3498db;
-  --primary-dark: #2980b9;
-  --primary-light: #5faee3;
-  --primary-lightest: #ebf5fb;
+  /* Core color palette - refined with a modern purple theme */
+  --primary-color: #8e44ad;
+  --primary-dark: #6c3483;
+  --primary-light: #a569bd;
+  --primary-lightest: #f4ecf7;
   --secondary-color: #2c3e50;
   --secondary-dark: #1a252f;
   --secondary-light: #34495e;
@@ -38,11 +38,11 @@
   --spacing-lg: 24px;
   --spacing-xl: 32px;
   
-  /* Effects */
+  /* Enhanced effects */
   --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   --box-shadow-hover: 0 5px 15px rgba(0, 0, 0, 0.08);
   --box-shadow-active: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --focus-ring: 0 0 0 3px rgba(52, 152, 219, 0.3);
+  --focus-ring: 0 0 0 3px rgba(142, 68, 173, 0.3);
 }
 
 /* Base styles with better defaults */
@@ -77,6 +77,10 @@ a {
   transition: color var(--transition-fast);
 }
 
+a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
 
 .visually-hidden {
   position: absolute;
@@ -98,9 +102,9 @@ a {
   overflow: hidden;
 }
 
-/* Enhanced sidebar styling */
+/* Enhanced sidebar styling with updated gradient */
 .sidebar {
-  background: linear-gradient(to bottom, var(--secondary-dark), var(--secondary-color));
+  background: linear-gradient(135deg, var(--secondary-dark), var(--secondary-color) 60%, var(--primary-dark));
   color: var(--text-light);
   width: var(--sidebar-width);
   height: 100%;
@@ -128,7 +132,7 @@ a {
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background-color: var(--secondary-light);
+  background-color: var(--primary-light);
   border-radius: 20px;
 }
 
@@ -164,7 +168,7 @@ a {
   transform: translateX(calc(-1 * var(--sidebar-width)));
 }
 
-/* Mobile overlay with improved animation */
+/* Improved mobile overlay with smoother animation */
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -198,7 +202,7 @@ a {
   align-items: center;
   justify-content: center;
   border: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);
   z-index: 998;
   cursor: pointer;
   font-size: 24px;
@@ -238,7 +242,7 @@ a {
 
 .close-sidebar:hover, 
 .toggle-sidebar:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .sidebar-content {
@@ -249,7 +253,7 @@ a {
   gap: var(--spacing-xl);
 }
 
-/* Enhanced profile section */
+/* Enhanced profile section with updated accent colors */
 .profile-sidebar {
   display: flex;
   flex-direction: column;
@@ -276,7 +280,7 @@ a {
 .profile-pic-container:hover {
   transform: scale(1.05);
   border-color: var(--primary-light);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 12px rgba(142, 68, 173, 0.3);
 }
 
 .profile-pic {
@@ -309,21 +313,22 @@ a {
   white-space: nowrap;
   text-align: center;
   font-weight: 500;
+  color: var(--text-light);
 }
 
-/* Enhanced profile options with better animations */
+/* Enhanced profile options with smoother animations */
 .profile-options {
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: 220px;
-  background-color: black;
+  background-color: var(--bg-lighter);
   color: var(--text-dark);
   border-radius: var(--border-radius);
   padding: var(--spacing-md);
   z-index: 100;
-  box-shadow: var(--box-shadow-hover);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
   margin-top: 10px;
   animation: fadeIn 0.2s ease-out;
   border: 1px solid var(--border-color);
@@ -393,7 +398,7 @@ a {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Enhanced sidebar menu */
+/* Enhanced sidebar menu with improved active state */
 .sidebar-menu {
   display: flex;
   flex-direction: column;
@@ -478,7 +483,7 @@ a {
   color: var(--danger-color);
 }
 
-/* Main content area */
+/* Main content area with improved scrolling */
 .main-content {
   flex: 1;
   padding: var(--spacing-lg);
@@ -488,7 +493,8 @@ a {
   overflow-y: auto;
   height: 100vh;
   scrollbar-width: thin;
-  scrollbar-color: var(--border-color) var(--bg-light);
+  scrollbar-color: var(--primary-light) var(--bg-light);
+  background-color: var(--bg-light);
 }
 
 .main-content::-webkit-scrollbar {
@@ -500,7 +506,8 @@ a {
 }
 
 .main-content::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
+  background-color: var(--primary-light);
+  opacity: 0.7;
   border-radius: 20px;
 }
 
@@ -514,7 +521,7 @@ a {
   width: calc(100% - var(--sidebar-collapsed-width));
 }
 
-/* Content header */
+/* Content header with updated styling */
 .content-header {
   display: flex;
   justify-content: space-between;
@@ -526,11 +533,11 @@ a {
 
 .content-header h2 {
   font-size: 24px;
-  color: var(--secondary-color);
+  color: var(--primary-dark);
   font-weight: 600;
 }
 
-/* Files display container */
+/* Files display container with updated card styling */
 .files-container {
   background-color: var(--bg-lighter);
   border-radius: var(--border-radius);
@@ -586,6 +593,7 @@ a {
   transform: translateY(-2px);
   box-shadow: var(--box-shadow-hover);
   border-color: var(--primary-light);
+  background-color: var(--primary-lightest);
 }
 
 .files-container li strong {
@@ -621,23 +629,24 @@ a {
   text-align: center;
   color: var(--text-muted);
   padding: var(--spacing-xl);
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(142, 68, 173, 0.03);
   border-radius: var(--border-radius);
   font-style: italic;
 }
 
-/* Configuration section */
+/* Configuration section with updated styling */
 .config-section {
   background-color: var(--bg-lighter);
   border-radius: var(--border-radius);
   padding: var(--spacing-lg);
   box-shadow: var(--box-shadow);
   margin-bottom: var(--spacing-lg);
+  border-left: 4px solid var(--primary-color);
 }
 
 .config-section h3 {
   margin-bottom: var(--spacing-md);
-  color: var(--secondary-color);
+  color: var(--primary-dark);
   font-size: 18px;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: var(--spacing-sm);
@@ -741,4 +750,188 @@ a {
 
 .mb-lg {
   margin-bottom: var(--spacing-lg);
+}
+/* Añadir estos estilos al final de UserView.css */
+
+/* Estilos para la sección de configuración */
+.config-section {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.config-section h3 {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e1e1e1;
+  padding-bottom: 10px;
+}
+
+.profile-form {
+  margin-bottom: 40px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
+
+.info-text {
+  color: #777;
+  font-size: 14px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-btn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+
+.save-btn:hover {
+  background-color: #2980b9;
+}
+
+.save-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Estilos para la zona de peligro */
+.account-danger-zone {
+  margin-top: 40px;
+  border-top: 1px solid #e1e1e1;
+  padding-top: 20px;
+}
+
+.account-danger-zone h4 {
+  color: #e74c3c;
+  margin-bottom: 15px;
+}
+
+.delete-account-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s;
+}
+
+.delete-account-btn:hover {
+  background-color: #c0392b;
+}
+
+.delete-confirmation {
+  background-color: #fff5f5;
+  border: 1px solid #e74c3c;
+  padding: 20px;
+  border-radius: 4px;
+  margin-top: 15px;
+}
+
+.warning-text {
+  color: #e74c3c;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.delete-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.confirm-delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.confirm-delete-btn:hover {
+  background-color: #c0392b;
+}
+
+.confirm-delete-btn:disabled {
+  background-color: #f1a9a0;
+  cursor: not-allowed;
+}
+
+.cancel-delete-btn {
+  background-color: #7f8c8d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.cancel-delete-btn:hover {
+  background-color: #636e72;
+}
+
+/* Estilos para mensajes de éxito/error */
+.message {
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.message.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
 }
