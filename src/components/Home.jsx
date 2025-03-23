@@ -83,7 +83,7 @@ const Home = () => {
         <h2>Contacto</h2>
         <p>¿Tienes alguna pregunta o comentario? ¡Contáctanos!</p>
         <div className="contact-image">
-            <img src="/images/fondo2.jpg" alt="Contáctanos" /> 
+            <img src="/images/qr_info1.png" alt="Contáctanos" /> 
           </div>
       </section>
     </div>
