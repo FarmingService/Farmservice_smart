@@ -555,7 +555,7 @@ const UserView = () => {
                   </p>
                   
                   <div className="form-group">
-                    <label>Confirma tu contraseña para continuar</label>
+                    <p>Confirma tu contraseña para continuar</p>
                     <input 
                       type="password" 
                       value={currentPassword} 
