@@ -5,20 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Métricas del Cultivo</title>
 
-  <!-- Cargar Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Cargar SheetJS para leer el Excel -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.17.0/dist/xlsx.full.min.js"></script>
   <!-- Cargar archivo CSS de estilos -->
-<link rel="stylesheet" href="Metricas.css">
+  <link rel="stylesheet" href="Metricas.css">
   
+  <!-- Cargar Chart.js y SheetJS al final del documento para mejorar el rendimiento -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.17.0/dist/xlsx.full.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>Evaluación de Resultados de Cultivo</h1>
     
-
     <!-- Formulario para cargar archivos Excel -->
     <div class="card file-upload-container">
       <h3>Carga de Datos</h3>
@@ -94,7 +91,7 @@
     
     <!-- Contenedor del gráfico -->
     <div class="card" id="chartContainer">
-      <canvas id="combinedChart" width="auto" height="auto" style="display: block; box-sizing: border-box; height: auto; width: 968px;"></canvas>
+      <canvas id="combinedChart"></canvas>
     </div>
     
     <!-- Tabla de datos -->
@@ -132,7 +129,6 @@
       q4: []
     };
     
-    // Elementos del DOM
     const controlPanel = document.getElementById('controlPanel');
     const summarySection = document.getElementById('summary');
     const dataTableContainer = document.getElementById('dataTableContainer');
@@ -144,75 +140,51 @@
     const showQ4Checkbox = document.getElementById('showQ4');
     const exportChartBtn = document.getElementById('exportChartBtn');
     
-    // Configuración de colores
     const chartColors = {
-      q1: {
-        borderColor: '#e74c3c',
-        backgroundColor: 'rgba(231, 76, 60, 0.2)'
-      },
-      q2: {
-        borderColor: '#2ecc71',
-        backgroundColor: 'rgba(46, 204, 113, 0.2)'
-      },
-      q3: {
-        borderColor: '#3498db',
-        backgroundColor: 'rgba(52, 152, 219, 0.2)'
-      },
-      q4: {
-        borderColor: '#f39c12',
-        backgroundColor: 'rgba(243, 156, 18, 0.2)'
-      }
+      q1: { borderColor: '#e74c3c', backgroundColor: 'rgba(231, 76, 60, 0.2)' },
+      q2: { borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)' },
+      q3: { borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.2)' },
+      q4: { borderColor: '#f39c12', backgroundColor: 'rgba(243, 156, 18, 0.2)' }
     };
-    
+
     // Función para cargar y procesar los datos del Excel
-    excelFileInput.addEventListener('change', function(e) {
+    excelFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      
+
       document.getElementById('loading').style.display = 'block';
       
       const reader = new FileReader();
       reader.onload = function(event) {
         const data = new Uint8Array(event.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        
-        // Obtener los datos de la primera hoja
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        
-        // Extraer los días y datos de cada trimestre
+
         originalData.labels = jsonData.slice(1).map(row => `Día ${row[0]}`);
         originalData.q1 = jsonData.slice(1).map(row => Math.floor(row[1] || 0));
         originalData.q2 = jsonData.slice(1).map(row => Math.floor(row[2] || 0));
         originalData.q3 = jsonData.slice(1).map(row => Math.floor(row[3] || 0));
         originalData.q4 = jsonData.slice(1).map(row => Math.floor(row[4] || 0));
-        
-        // Mostrar panel de control y resumen
+
         controlPanel.style.display = 'flex';
         summarySection.style.display = 'flex';
         dataTableContainer.style.display = 'block';
-        
-        // Actualizar la tabla de datos
+
         updateDataTable(originalData);
-        
-        // Actualizar estadísticas
         updateStatistics(originalData);
-        
-        // Crear el gráfico
         updateChart();
-        
+
         document.getElementById('loading').style.display = 'none';
       };
-      
+
       reader.readAsArrayBuffer(file);
     });
-    
+
     // Función para actualizar la tabla de datos
     function updateDataTable(data) {
       const tableBody = document.querySelector('#dataTable tbody');
       tableBody.innerHTML = '';
-      
-      // Mostrar los primeros 20 registros para no sobrecargar la página
       const maxRows = Math.min(data.labels.length, 6);
       
       for (let i = 0; i < maxRows; i++) {
@@ -226,41 +198,36 @@
         `;
         tableBody.appendChild(row);
       }
-      
-      // Agregar nota si hay más datos
+
       if (data.labels.length > 6) {
         const noteRow = document.createElement('tr');
         noteRow.innerHTML = `<td colspan="5">Mostrando 20 de ${data.labels.length} registros</td>`;
         tableBody.appendChild(noteRow);
       }
     }
-    
+
     // Función para actualizar estadísticas
     function updateStatistics(data) {
-      // Calcular promedios
       const avgQ1 = data.q1.reduce((sum, val) => sum + val, 0) / data.q1.length;
       const avgQ2 = data.q2.reduce((sum, val) => sum + val, 0) / data.q2.length;
       const avgQ3 = data.q3.reduce((sum, val) => sum + val, 0) / data.q3.length;
       const avgQ4 = data.q4.reduce((sum, val) => sum + val, 0) / data.q4.length;
-      
-      // Actualizar valores en el DOM
+
       document.getElementById('avgQ1').textContent = avgQ1.toFixed(1);
       document.getElementById('avgQ2').textContent = avgQ2.toFixed(1);
       document.getElementById('avgQ3').textContent = avgQ3.toFixed(1);
       document.getElementById('avgQ4').textContent = avgQ4.toFixed(1);
-      
-      // Determinar el mejor trimestre
+
       const averages = [avgQ1, avgQ2, avgQ3, avgQ4];
       const maxAvg = Math.max(...averages);
       const bestQuarterIndex = averages.indexOf(maxAvg);
       const bestQuarterElement = document.getElementById('bestQuarter');
       
       bestQuarterElement.textContent = `Q${bestQuarterIndex + 1}`;
-      bestQuarterElement.className = ''; // Resetear clases
       bestQuarterElement.classList.add('stat-value', `q${bestQuarterIndex + 1}-color`);
     }
-    
-    // Función para agrupar datos según la selección
+
+    // Función para agrupar datos
     function groupData(data, groupSize) {
       if (groupSize <= 1) return data;
       
@@ -282,21 +249,18 @@
       
       return result;
     }
-    
+
     // Función para actualizar el gráfico
     function updateChart() {
-      // Obtener valores actuales
       const chartType = chartTypeSelect.value;
       const groupSize = parseInt(dataGroupingSelect.value);
       const showQ1 = showQ1Checkbox.checked;
       const showQ2 = showQ2Checkbox.checked;
       const showQ3 = showQ3Checkbox.checked;
       const showQ4 = showQ4Checkbox.checked;
-      
-      // Agrupar datos según la selección
+
       const groupedData = groupData(originalData, groupSize);
       
-      // Preparar datasets
       const datasets = [];
       
       if (showQ1) {
@@ -347,12 +311,8 @@
         });
       }
       
-      // Destruir gráfico existente si hay uno
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
-      
-      // Crear nuevo gráfico
+      if (chartInstance) chartInstance.destroy();
+
       chartInstance = new Chart(ctx, {
         type: chartType,
         data: {
@@ -363,57 +323,13 @@
           responsive: true,
           maintainAspectRatio: false,
           scales: chartType !== 'radar' ? {
-            x: {
-              title: {
-                display: true,
-                text: 'Días',
-                font: {
-                  weight: 'bold'
-                }
-              },
-              ticks: {
-                autoSkip: true,
-                maxTicksLimit: 10,
-                maxRotation: 45,
-                minRotation: 0
-              }
-            },
-            y: {
-              title: {
-                display: true,
-                text: 'Cantidad de Frutas',
-                font: {
-                  weight: 'bold'
-                }
-              },
-              min: 0,
-              ticks: {
-                stepSize: 5
-              }
-            }
+            x: { title: { display: true, text: 'Días' }, ticks: { maxTicksLimit: 10 } },
+            y: { title: { display: true, text: 'Cantidad de Frutas' }, min: 0, ticks: { stepSize: 5 } }
           } : {},
           plugins: {
-            legend: {
-              position: 'top',
-              labels: {
-                usePointStyle: true,
-                padding: 20
-              }
-            },
-            tooltip: {
-              callbacks: {
-                label: function(tooltipItem) {
-                  return `${tooltipItem.dataset.label}: ${tooltipItem.raw}`;
-                }
-              }
-            },
-            title: {
-              display: true,
-              text: 'Producción de Frutas por Trimestre',
-              font: {
-                size: 16
-              }
-            }
+            legend: { position: 'top' },
+            tooltip: { callbacks: { label: tooltipItem => `${tooltipItem.dataset.label}: ${tooltipItem.raw}` } },
+            title: { display: true, text: 'Producción de Frutas por Trimestre' }
           }
         }
       });
@@ -428,13 +344,13 @@
     showQ4Checkbox.addEventListener('change', updateChart);
     
     // Exportar gráfico como imagen
-    exportChartBtn.addEventListener('click', function() {
-      if (!chartInstance) return;
-      
-      const link = document.createElement('a');
-      link.download = 'grafico-cultivo.png';
-      link.href = chartInstance.toBase64Image();
-      link.click();
+    exportChartBtn.addEventListener('click', () => {
+      if (chartInstance) {
+        const link = document.createElement('a');
+        link.download = 'grafico-cultivo.png';
+        link.href = chartInstance.toBase64Image();
+        link.click();
+      }
     });
   </script>
 </body>

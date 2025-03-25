@@ -1,64 +1,334 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="description" content="Visualizador de mapas creado con QGIS">
+        <title>Visualizador de Mapas QGIS</title>
+        
+        <!-- Recursos CSS externos -->
         <link rel="stylesheet" href="./resources/ol.css">
         <link rel="stylesheet" href="resources/fontawesome-all.min.css">
         <link href="resources/ol-geocoder.min.css" rel="stylesheet">
         <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
         <link rel="stylesheet" href="./resources/qgis2web.css">
+        
         <style>
+        /* Estilos generales mejorados */
         html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
             background-color: #ffffff;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
         }
-        .ol-control > * {
-            background-color: #f8f8f8!important;
-            color: #444444!important;
-            border-radius: 0px;
-        }
-        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
-            color: #444444!important;
-        }
-        .search-layer-input-search {
-            background-color: #f8f8f8!important;
-        }
-        .ol-control > *:focus, .ol-control >*:hover {
-            background-color: rgba(248, 248, 248, 0.7)!important;
-        } 
-        .ol-control {
-            background-color: rgba(255,255,255,.4) !important;
-            padding: 2px !important;
-        } 
-        </style>
-
-        <style>
+        
+        /* Contenedor del mapa responsivo */
         #map {
-            width: 975px;
-            height: 588px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Mejora de controles */
+        .ol-control {
+            background-color: rgba(255, 255, 255, 0.6) !important;
+            padding: 3px !important;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ol-control button {
+            background-color: #f8f8f8 !important;
+            color: #444444 !important;
+            border-radius: 3px !important;
+            margin: 1px;
+            transition: all 0.2s ease;
+        }
+        
+        .ol-control button:hover,
+        .ol-control button:focus {
+            background-color: rgba(248, 248, 248, 0.8) !important;
+            transform: scale(1.05);
+        }
+        
+        /* Mejora del popup */
+        .ol-popup {
+            position: absolute;
+            background-color: white;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cccccc;
+            bottom: 12px;
+            left: -50px;
+            min-width: 280px;
+            max-width: 400px;
+        }
+        
+        .ol-popup:after, .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .ol-popup:after {
+            border-top-color: white;
+            border-width: 10px;
+            left: 48px;
+            margin-left: -10px;
+        }
+        
+        .ol-popup:before {
+            border-top-color: #cccccc;
+            border-width: 11px;
+            left: 48px;
+            margin-left: -11px;
+        }
+        
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            font-size: 16px;
+            color: #666;
+        }
+        
+        .ol-popup-closer:after {
+            content: "✖";
+        }
+        
+        #popup-content {
+            margin-top: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        /* Buscador mejorado */
+        .search-layer-input-search {
+            background-color: #f8f8f8 !important;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 5px 10px;
+            width: 250px;
+        }
+        
+        /* Selector de capas mejorado */
+        .layer-switcher {
+            top: 0.5em;
+            right: 0.5em;
+            border-radius: 4px;
+            padding: 0;
+        }
+        
+        .layer-switcher button {
+            background-color: #f8f8f8 !important;
+            color: #444444 !important;
+            padding: 5px;
+        }
+        
+        /* Barra de escala mejorada */
+        .ol-scale-line {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            padding: 2px 5px;
+            color: #444;
+        }
+        
+        /* Leyenda personalizada */
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        #legend-toggle {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #f8f8f8;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Loader para cargas iniciales */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1002;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        /* Barra superior para título o información */
+        #header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            text-align: center;
+            z-index: 999;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Media queries para dispositivos más pequeños */
+        @media screen and (max-width: 768px) {
+            #header {
+                font-size: 14px;
+                padding: 5px;
+            }
+            
+            .search-layer-input-search {
+                width: 150px;
+            }
+            
+            #legend {
+                max-width: 150px;
+            }
         }
         </style>
-        <title></title>
     </head>
     <body>
+       
+        
+        <!-- Barra superior con título -->
+        <div id="header">Visualizador de Mapas QGIS</div>
+        
+        <!-- Contenedor del mapa -->
         <div id="map">
             <div id="popup" class="ol-popup">
                 <a href="#" id="popup-closer" class="ol-popup-closer"></a>
                 <div id="popup-content"></div>
             </div>
         </div>
+        
+        
+        
+        <!-- Contenedor de la leyenda -->
+        <div id="legend"></div>
+        
+        <!-- Scripts originales -->
         <script src="resources/qgis2web_expressions.js"></script>
         <script src="./resources/functions.js"></script>
         <script src="./resources/ol.js"></script>
         <script src="./resources/ol-layerswitcher.js"></script>
         <script src="resources/ol-geocoder.js"></script>
-        <script src="layers/PWNI_1.js"></script><script src="layers/PSI_3.js"></script><script src="layers/FPI_5.js"></script>
-        <script src="styles/PWNI_1_style.js"></script><script src="styles/PSI_3_style.js"></script><script src="styles/FPI_5_style.js"></script>
+        <script src="layers/PWNI_1.js"></script>
+        <script src="layers/PSI_3.js"></script>
+        <script src="layers/FPI_5.js"></script>
+        <script src="styles/PWNI_1_style.js"></script>
+        <script src="styles/PSI_3_style.js"></script>
+        <script src="styles/FPI_5_style.js"></script>
         <script src="./layers/layers.js" type="text/javascript"></script> 
         <script src="./resources/Autolinker.min.js"></script>
         <script src="./resources/qgis2web.js"></script>
+        
+        <!-- Script adicional para funcionalidades mejoradas -->
+        <script>
+            // Ocultar el loader cuando el mapa esté cargado
+            window.addEventListener('load', function() {
+                document.getElementById('loader').style.display = 'none';
+            });
+            
+            // Funcionalidad del botón de leyenda
+            document.getElementById('legend-toggle').addEventListener('click', function() {
+                const legend = document.getElementById('legend');
+                if (legend.style.display === 'none' || !legend.style.display) {
+                    legend.style.display = 'block';
+                    this.textContent = 'Ocultar leyenda';
+                    
+                    // Generar leyenda a partir de las capas
+                    if (legend.innerHTML === '') {
+                        try {
+                            // Intentar acceder a las capas y estilos
+                            let legendHTML = '<h4>Leyenda</h4>';
+                            
+                            // Esto dependerá de cómo estén estructuradas tus capas
+                            // Este es un ejemplo genérico
+                            const layerNames = ['PWNI', 'PSI', 'FPI'];
+                            const layerColors = ['#ff0000', '#00ff00', '#0000ff']; // Colores de ejemplo
+                            
+                            for (let i = 0; i < layerNames.length; i++) {
+                                legendHTML += `
+                                    <div style="margin-bottom: 5px;">
+                                        <span style="display: inline-block; width: 15px; height: 15px; background-color: ${layerColors[i]}; margin-right: 5px;"></span>
+                                        <span>${layerNames[i]}</span>
+                                    </div>
+                                `;
+                            }
+                            
+                            legend.innerHTML = legendHTML;
+                        } catch (e) {
+                            legend.innerHTML = '<p>No se pudo generar la leyenda automáticamente.</p>';
+                        }
+                    }
+                } else {
+                    legend.style.display = 'none';
+                    this.textContent = 'Mostrar leyenda';
+                }
+            });
+            
+            // Mejora para la funcionalidad de popups
+            const popupElement = document.getElementById('popup');
+            const popupCloser = document.getElementById('popup-closer');
+            const popupContent = document.getElementById('popup-content');
+            
+            if (popupCloser) {
+                popupCloser.addEventListener('click', function(e) {
+                    popupElement.style.display = 'none';
+                    popupCloser.blur();
+                    e.preventDefault();
+                });
+            }
+            
+            // Detectar cambios de orientación para móviles
+            window.addEventListener('orientationchange', function() {
+                setTimeout(function() {
+                    // Forzar recalculo del tamaño del mapa después de cambiar orientación
+                    if (window.map) {
+                        window.map.updateSize();
+                    }
+                }, 200);
+            });
+            
+            // Ajuste para pantallas táctiles
+            if ('ontouchstart' in window) {
+                document.body.classList.add('touch-device');
+            }
+        </script>
     </body>
 </html>
